@@ -2,7 +2,9 @@
 SpaceCRAFT
 =========
 
-Description. Conceived by Hannah Belshaw, from Cumnor House Girl’s School, created by Martin O'Hanlon, www.stuffaboutcode.com.
+IN PROGRESS!!!
+
+Todo. Conceived by Hannah Belshaw, from Cumnor House Girl’s School, created by Martin O'Hanlon, www.stuffaboutcode.com.
 
 Installation
 ============
