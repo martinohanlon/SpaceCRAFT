@@ -109,12 +109,17 @@ class AstroPiDataLogger():
             while((time() - starttime) < timetorun):
 
                 #read data and write to csv file
+                #todo there is better way of ensuring we get 1 per interval
+                # the rowstarttime should be the starttime plus the interval
                 rowstarttime = time()
                 datarow = self._read_data()
                 writer.writerow(datarow)
                 
                 #wait until the next interval
                 while(time() - rowstarttime < interval):
+                    #remove once astro pi bug is fixed
+                    #keep getting the orientation
+                    self.ap.get_orientation()
                     sleep(0.01)
 
                 progressbar.next()
