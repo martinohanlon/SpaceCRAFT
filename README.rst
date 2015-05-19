@@ -70,4 +70,4 @@ Open Source
 .. _BSD Licence: http://opensource.org/licenses/BSD-3-Clause
 .. _GitHub: https://github.com/martinohanlon/SpaceCRAFT
 .. _GitHub Issues: https://github.com/martinohanlon/SpaceCRAFT/issues
-.. _\<Stuff about="code" \/\>
+.. _Stuff about="code": http://www.stuffaboutcode.com
