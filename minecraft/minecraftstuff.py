@@ -2,12 +2,16 @@
 #github.com/martinohanlon/minecraft-stuff
 #Raspberry Pi, Minecraft - Minecraft 'stuff' extensions
 
-import mcpi.minecraft as minecraft
-import mcpi.block as block
-from mcpi.vec3 import Vec3
-import copy
+try:
+    import mcpi.minecraft as minecraft
+    import mcpi.block as block
+except ImportError:
+    import minecraft
+    import block
+    
+from sets import Set
+from copy import deepcopy
 import time
-import collections
 import math
 
 class MinecraftDrawing:
@@ -303,24 +307,40 @@ class MinecraftShape:
     def draw(self):
         """
         draws the shape in Minecraft
-        taking into account where it was last drawn and only updating the blocks which have changed
+        taking into account where it was last drawn and only updates the blocks which have changed
         """
 
-        #Find the blocks which are different between the last ones drawn
-        #create counters
-        drawnCounter = collections.Counter(self.drawnShapeBlocks)
-        currentCounter = collections.Counter(self.shapeBlocks)
-        
+        #create 2 sets only of the blocks which are drawn and one of the shapeBlocks
+        drawnSet = Set(self.drawnShapeBlocks)
+        currentSet = Set(self.shapeBlocks)
+
         #work out the blocks which need to be cleared
-        for blockToClear in drawnCounter - currentCounter:
+        for blockToClear in drawnSet - currentSet:
             self.mc.setBlock(blockToClear.actualPos.x, blockToClear.actualPos.y, blockToClear.actualPos.z, block.AIR.id)
 
         #work out the blocks which have changed and need to be re-drawn
-        for blockToDraw in currentCounter - drawnCounter:
+        for blockToDraw in currentSet - drawnSet:
             self.mc.setBlock(blockToDraw.actualPos.x, blockToDraw.actualPos.y, blockToDraw.actualPos.z, blockToDraw.blockType, blockToDraw.blockData)
 
         #update the blocks which have been drawn
-        self.drawnShapeBlocks = copy.deepcopy(self.shapeBlocks)
+        self.drawnShapeBlocks = deepcopy(self.shapeBlocks)
+        self.visible = True
+
+    def _draw_fullrefresh(self):
+        """
+        USED FOR DEBUGGING ONLY
+        draws the shape in Minecraft, by clearing all the blocks and redrawing them 
+        """
+
+        if self.drawnShapeBlocks != None:
+            for blockToClear in self.drawnShapeBlocks:
+                self.mc.setBlock(blockToClear.actualPos.x, blockToClear.actualPos.y, blockToClear.actualPos.z, block.AIR.id)
+
+        for blockToDraw in self.shapeBlocks:
+            self.mc.setBlock(blockToDraw.actualPos.x, blockToDraw.actualPos.y, blockToDraw.actualPos.z, blockToDraw.blockType, blockToDraw.blockData)
+
+        #update the blocks which have been drawn
+        self.drawnShapeBlocks = deepcopy(self.shapeBlocks)
         self.visible = True
 
     def clear(self):
@@ -347,8 +367,7 @@ class MinecraftShape:
     def move(self, x, y, z):
         """
         moves the position of the shape to x,y,z
-        """
-        
+        """        
         self.position.x = x
         self.position.y = y
         self.position.z = z
@@ -393,13 +412,19 @@ class MinecraftShape:
         if self.visible:
             self.draw()
 
+    def rotateBy(self, yaw, pitch, roll):
+        """
+        increments the rotation of a shape by yaw, pitch and roll
+        """
+        self.rotate(self.yaw + yaw, self.pitch + pitch, self.roll + roll)
+        
     def _moveShapeBlock(self, shapeBlock, x, y, z):
         """
         offset the position of the block by the position
         """
         shapeBlock.actualPos.x = shapeBlock.relativePos.x + x
         shapeBlock.actualPos.y = shapeBlock.relativePos.y + y
-        shapeBlock.actualPos.z = shapeBlock.relativePos.z + z                         
+        shapeBlock.actualPos.z = shapeBlock.relativePos.z + z
 
     def _rotateShapeBlock(self, shapeBlock, yaw, pitch, roll):
         """
@@ -408,6 +433,7 @@ class MinecraftShape:
         self._rotateShapeBlockY(shapeBlock, yaw)
         self._rotateShapeBlockZ(shapeBlock, roll)
         self._rotateShapeBlockX(shapeBlock, pitch)
+        
 
     def _rotateShapeBlockY(self, shapeBlock, theta):
         """
@@ -444,16 +470,20 @@ class MinecraftShape:
             z = shapeBlock.relativePos.z * cos_t + shapeBlock.relativePos.y * sin_t
             shapeBlock.relativePos.y = int(round(y,0))
             shapeBlock.relativePos.z = int(round(z,0))
-        
-    def _roundVec3(vec3):
-        x = int(round(vec3.x,0))
-        y = int(round(vec3.y,0))
-        z = int(round(vec3.z,0))
-        return Vec3(x,y,z)
 
-    def setBlock(self, x, y, z, blockType, blockData = 0):
+    def setBlock(self, x, y, z, blockType, blockData = 0, tag = ""):
         """
-        sets one block in the shape
+        sets one block in the shape and redraws it 
+        """
+        self._setBlock(x, y, z, blockType, blockData, tag)
+
+        #if the shape is visible (re)draw it
+        if self.visible:
+            self.draw()
+
+    def _setBlock(self, x, y, z, blockType, blockData, tag):
+        """
+        sets one block in the shape 
         """
         #does the block already exist?
         for shapeBlock in self.shapeBlocks:
@@ -461,20 +491,18 @@ class MinecraftShape:
                 #it does exist, update it
                 shapeBlock.blockType = blockType
                 shapeBlock.blockData = blockData
+                shapeBlock.tag= tag
+                break
         else:
             #it doesn't append it
-            newShapeBlock = ShapeBlock(x, y, z, blockType, blockData)
+            newShapeBlock = ShapeBlock(x, y, z, blockType, blockData, tag)
             self._recalcBlock(newShapeBlock)
             self.shapeBlocks.append(newShapeBlock)
 
-        if self.visible:
-            self.draw()
-
-    def setBlocks(self, x1, y1, z1, x2, y2, z2, blockType, blockData = 0):
+    def setBlocks(self, x1, y1, z1, x2, y2, z2, blockType, blockData = 0, tag = ""):
         """
-        creates a cuboid of blocks in the shape
+        creates a cuboid of blocks in the shape and redraws it
         """
-        
         #order x, y, z's
         if x1 > x2: x1, x2 = x2, x1
         if y1 > y2: y1, y2 = y2, y1
@@ -484,15 +512,31 @@ class MinecraftShape:
         for x in range(x1, x2 + 1):
             for y in range(y1, y2 + 1):
                 for z in range(z1, z2 + 1):
-                    self.setBlock(x, y, z, blockType, blockData)
+                    self._setBlock(x, y, z, blockType, blockData, tag)
 
+        #if the shape is visible (re)draw it
+        if self.visible:
+            self.draw()
+
+    def getShapeBlock(self, x, y, z):
+        """
+        returns the shape block for an 'actual position'        
+        """
+        #does the block exist?
+        for shapeBlock in self.shapeBlocks:
+            if shapeBlock.actualPos.x == x and shapeBlock.actualPos.y == y and shapeBlock.actualPos.z == z:
+                return shapeBlock
+        else:
+            #it doesn't return None
+            return None
+        
 # a class created to manage a block within a shape
 class ShapeBlock():
     """
     ShapeBlock
     a class to hold one block within a shape
     """
-    def __init__(self, x, y, z, blockType, blockData = 0):
+    def __init__(self, x, y, z, blockType, blockData = 0, tag = ""):
         #persist data
         self.blockType = blockType
         self.blockData = blockData
@@ -504,6 +548,10 @@ class ShapeBlock():
         self.relativePos = minecraft.Vec3(x, y, z)
         # actual pos - actual block position in the world
         self.actualPos = minecraft.Vec3(x, y, z)
+
+        #the tag system is used to give a particular block inside a shape meaning
+        # e.g. for an animal shape you could tag the block which is its head
+        self.tag = tag
 
         # the mc block object
         self.mcBlock = block.Block(blockType, blockData)
@@ -520,50 +568,60 @@ class ShapeBlock():
     def __eq__(self, other):
         return (self.actualPos.x, self.actualPos.y, self.actualPos.z, self.blockType, self.blockData) == (other.actualPos.x, other.actualPos.y, other.actualPos.z, other.blockType, other.blockData)
 
-
-# testing
+# rotation test
 if __name__ == "__main__":
 
     #connect to minecraft
-    mc = minecraft.Minecraft.create("192.168.1.103")
+    mc = minecraft.Minecraft.create()
 
     #test shape
-    pos = Vec3(0,40,0)
+    pos = minecraft.Vec3(0,40,0)
 
     myShape = MinecraftShape(mc, pos)
-    myShape.setBlocks(-3, 0, 0, 3, 0, 0, block.WOOL.id, 2)
-    myShape.setBlocks(0, -3, 0, 0, 3, 0, block.WOOL.id, 3)
-    myShape.setBlocks(0, 0, -3, 0, 0, 3, block.WOOL.id, 4)
+    try:
+        #myShape.setBlocks(-3, 0, 0, 3, 0, 0, block.WOOL.id, 2)
+        #myShape.setBlocks(0, -3, 0, 0, 3, 0, block.WOOL.id, 3)
+        #myShape.setBlocks(0, 0, -3, 0, 0, 3, block.WOOL.id, 4)
+        print("draw shape")
+        myShape.setBlocks(-5, 0, -5, 3, 0, 3, block.WOOL.id, 5)
+        print("draw shape done")
+        
+        time.sleep(5)
+        roll = 0
+        pitch = 0
+        yaw = 0
 
-    time.sleep(5)
-    roll = 0
-    pitch = 0
-    yaw = 0
+        #angles = [15,30,45,60,75,90]
+        angles = [45, 90]
+
+        print("roll shape")
+        for roll in angles:
+            myShape.rotate(yaw, pitch, roll)
+            print("roll shape {} done".format(roll))
+            time.sleep(1)
+        
+        for pitch in angles:
+            myShape.rotate(yaw, pitch, roll)
+            time.sleep(1)
+
+        for yaw in angles:
+            myShape.rotate(yaw, pitch, roll)
+            time.sleep(1)
+
+        for count in range(0,5):
+            myShape.moveBy(1,0,0)
+
+        time.sleep(10)
+    finally:
+        myShape.clear()
     
-    for roll in [15,30,45,60,75,90]:
-        myShape.rotate(yaw, pitch, roll)
-        time.sleep(1)
-    
-    for pitch in [15,30,45,60,75,90]:
-        myShape.rotate(yaw, pitch, roll)
-        time.sleep(1)
-
-    for yaw in [15,30,45,60,75,90]:
-        myShape.rotate(yaw, pitch, roll)
-        time.sleep(1)
-
-    for count in range(0,100):
-        myShape.moveBy(1,0,0)
-
-    time.sleep(10)
-
-    myShape.clear()
-    
-# testing
+# minecraft stuff testing
 if __name__ == "__main__2":
 
     #connect to minecraft
     mc = minecraft.Minecraft.create()
+
+    #test MinecraftDrawing
 
     #clear area
     mc.setBlocks(-25, 0, -25, 25, 25, 25, block.AIR.id)
@@ -604,10 +662,10 @@ if __name__ == "__main__2":
     faceVertices.append(minecraft.Vec3(-5,15,5))
     mcDrawing.drawFace(faceVertices, True, block.GOLD_BLOCK.id)
 
-    #test shape
+    #test MinecraftShape
     playerPos = mc.player.getTilePos()
 
-    #create shape object
+    #create the shape object
     shapeBlocks = [ShapeBlock(0,0,0,block.DIAMOND_BLOCK.id),
                   ShapeBlock(1,0,0,block.DIAMOND_BLOCK.id),
                   ShapeBlock(1,0,1,block.DIAMOND_BLOCK.id),
@@ -617,7 +675,7 @@ if __name__ == "__main__2":
                   ShapeBlock(1,1,1,block.DIAMOND_BLOCK.id),
                   ShapeBlock(0,1,1,block.DIAMOND_BLOCK.id)]
     
-    # move the shape about
+    #move the shape about
     myShape = MinecraftShape(mc, playerPos, shapeBlocks)
     time.sleep(10)
     myShape.moveBy(-1,1,-1)
@@ -627,5 +685,8 @@ if __name__ == "__main__2":
     myShape.moveBy(1,1,0)
     time.sleep(10)
 
+    #rotate the shape
+    myShape.rotate(90,0,0)
+    
     #clear the shape
     myShape.clear()
