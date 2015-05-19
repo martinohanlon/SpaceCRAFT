@@ -4,7 +4,9 @@ SpaceCRAFT
 
 IN PROGRESS!!!
 
-Todo. Conceived by Hannah Belshaw, from Cumnor House Girl’s School, created by Martin O'Hanlon, www.stuffaboutcode.com.
+Todo. 
+
+Conceived by Hannah Belshaw, from Cumnor House Girl’s School, created by Martin O'Hanlon, `<Stuff about="code" />`_.
 
 Installation
 ============
@@ -15,6 +17,7 @@ Structure
 ============
 
 * datalogger - used to gather data from the astro pi sense hat and write it to a CSV file
+* minecraft - programs to interact with the astro pi board in minecraft 
 * poc - proof of concept code used in the development
 * scripts - useful scripts!
 
@@ -24,7 +27,7 @@ Usage
 Data logger
 ----------
 
-The datalogger/astropidatalogger.py program is run using::
+The datalogger/astropidatalogger.py program reads all the data from the astro pi board and writes it to a CSV files - it is run using::
 
     usage: astropidatalogger.py [-h] [-v] filename timetorun interval
    
@@ -67,3 +70,4 @@ Open Source
 .. _BSD Licence: http://opensource.org/licenses/BSD-3-Clause
 .. _GitHub: https://github.com/martinohanlon/SpaceCRAFT
 .. _GitHub Issues: https://github.com/martinohanlon/SpaceCRAFT/issues
+.. _<Stuff about="code" />
