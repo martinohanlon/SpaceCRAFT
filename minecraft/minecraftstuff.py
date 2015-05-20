@@ -9,7 +9,6 @@ except ImportError:
     import minecraft
     import block
     
-from sets import Set
 from copy import deepcopy
 import time
 import math
@@ -311,8 +310,11 @@ class MinecraftShape:
         """
 
         #create 2 sets only of the blocks which are drawn and one of the shapeBlocks
-        drawnSet = Set(self.drawnShapeBlocks)
-        currentSet = Set(self.shapeBlocks)
+        if self.drawnShapeBlocks == None:
+            drawnSet = set()
+        else:
+            drawnSet = set(self.drawnShapeBlocks)
+        currentSet = set(self.shapeBlocks)
 
         #work out the blocks which need to be cleared
         for blockToClear in drawnSet - currentSet:
@@ -566,7 +568,10 @@ class ShapeBlock():
         return hash((self.actualPos.x, self.actualPos.y, self.actualPos.z, self.blockType, self.blockData))
 
     def __eq__(self, other):
-        return (self.actualPos.x, self.actualPos.y, self.actualPos.z, self.blockType, self.blockData) == (other.actualPos.x, other.actualPos.y, other.actualPos.z, other.blockType, other.blockData)
+        if other is None:
+            return False
+        else:
+            return (self.actualPos.x, self.actualPos.y, self.actualPos.z, self.blockType, self.blockData) == (other.actualPos.x, other.actualPos.y, other.actualPos.z, other.blockType, other.blockData)
 
 # rotation test
 if __name__ == "__main__":

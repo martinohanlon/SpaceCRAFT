@@ -1,3 +1,14 @@
+"""
+SpaceCRAFT - Astro Pi competition[http://astro-pi.org/] entry
+Conceived by Hannah Belshaw
+Created by Martin O'Hanlon[http://www.stuffaboutcode.com]
+For the Raspberry Pi Foundation[https://www.raspberrypi.org]
+
+displaytube.py
+
+A tower of glass blocks in minecraft that can show a value of
+blocks up the middle. Think Minecraft thermometer!
+"""
 from mcpi.minecraft import Minecraft
 from mcpi.minecraft import Vec3
 from mcpi import block

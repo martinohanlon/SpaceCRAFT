@@ -1,3 +1,13 @@
+"""
+SpaceCRAFT - Astro Pi competition[http://astro-pi.org/] entry
+Conceived by Hannah Belshaw
+Created by Martin O'Hanlon[http://www.stuffaboutcode.com]
+For the Raspberry Pi Foundation[https://www.raspberrypi.org]
+
+realtimedisplay.py
+
+Displays information from the Astro Pi board in real time in Minecraft
+"""
 from mcpi.minecraft import Vec3
 from mcpi.minecraft import Minecraft
 from mcpi import block

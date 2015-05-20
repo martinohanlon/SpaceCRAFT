@@ -1,11 +1,25 @@
+"""
+SpaceCRAFT - Astro Pi competition[http://astro-pi.org/] entry
+Conceived by Hannah Belshaw
+Created by Martin O'Hanlon[http://www.stuffaboutcode.com]
+For the Raspberry Pi Foundation[https://www.raspberrypi.org]
+
+astropidatalogger.py
+
+A data logging program which will write data from the astro pi board to
+a CSV file.
+"""
 import argparse
 from csv import DictWriter
 from datetime import datetime
 from time import sleep, time
 from astro_pi import AstroPi
-from astropiprogressbar import AstroPiProgressBar
+from astropiprogressbar import AstroPiBelshawProgressBar
 
 class AstroPiDataLogger():
+    """
+    A data logger for the astro pi board
+    """
 
     #field name constants
     TIME = "time"
@@ -83,7 +97,7 @@ class AstroPiDataLogger():
         """
 
         #create the astro pi progress bar
-        progressbar = AstroPiProgressBar(self.ap)
+        progressbar = AstroPiBelshawProgressBar(self.ap)
         
         self._write_message("Starting data logger")
         self._write_message(" filename - {}".format(filename))

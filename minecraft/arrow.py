@@ -4,11 +4,10 @@ Conceived by Hannah Belshaw
 Created by Martin O'Hanlon[http://www.stuffaboutcode.com]
 For the Raspberry Pi Foundation[https://www.raspberrypi.org]
 
-iss.py
+arrow.py
 
-A movable minecraft model of the ISS
+A movable arrow minecraft model
 """
-
 from minecraftstuff import MinecraftShape
 from minecraftstuff import ShapeBlock
 from mcpi.minecraft import Minecraft
@@ -16,7 +15,7 @@ from mcpi.minecraft import Vec3
 from mcpi import block
 from time import sleep
 
-class ISS(MinecraftShape):
+class Arrow(MinecraftShape):
     def __init__(self, mc, pos):
 
         self.pos = pos
@@ -25,7 +24,7 @@ class ISS(MinecraftShape):
         #init the MinecraftShape
         MinecraftShape.__init__(self, self.mc, self.pos, visible = False)
 
-        #create the ISS using setBlock(s) commands
+        #create the arrow using setBlock(s) commands
         # an arrow
         self.setBlocks(0, 0, -5, 0, 0, 5, block.WOOL.id, 1)
         self.setBlocks(1, 0, -4, 1, 0, -4, block.WOOL.id, 2)
@@ -35,7 +34,7 @@ class ISS(MinecraftShape):
         self.setBlocks(3, 0, -2, 3, 0, -2, block.WOOL.id, 4)
         self.setBlocks(-3, 0, -2, -3, 0, -2, block.WOOL.id, 4)
         
-        #make the iss visible
+        #make the arrow visible
         self.draw()
     
 #test
@@ -45,11 +44,11 @@ if __name__ == "__main__":
 
     pos = Vec3(0, 20, 0)
 
-    iss = ISS(mc, pos)
+    arrow = Arrow(mc, pos)
     
     try:
         sleep(5)
-        iss.rotate(90, 0, 0)
+        arrow.rotate(90, 0, 0)
         sleep(5)
     finally:
-        iss.clear()
+        arrow.clear()
