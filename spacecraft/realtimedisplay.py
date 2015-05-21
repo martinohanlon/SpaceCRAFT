@@ -11,8 +11,8 @@ Displays information from the Astro Pi board in real time in Minecraft
 from mcpi.minecraft import Vec3
 from mcpi.minecraft import Minecraft
 from mcpi import block
-from iss import ISS
-from mcastropi import MCAstroPi
+from minecraftmodels import ISS
+from minecraftmodels import MCAstroPi
 from displaytube import DisplayTube
 from astro_pi import AstroPi
 from time import sleep
@@ -37,20 +37,17 @@ tempTubePos = pos.clone()
 tempTubePos.x -= 5
 tempTube = DisplayTube(mc, tempTubePos, 10,
                        25, 40,
-                       ap.get_temperature(),
                        block.LAVA.id)
 
 humidTubePos = pos.clone()
 humidTube = DisplayTube(mc, humidTubePos, 10,
                         20, 45,
-                        ap.get_humidity(),
                         block.WATER)
 
 pressureTubePos = pos.clone()
 pressureTubePos.x += 5
 pressureTube = DisplayTube(mc, pressureTubePos, 10,
                            950, 1050,
-                           ap.get_pressure(),
                            block.OBSIDIAN)
 
 try:
@@ -64,6 +61,7 @@ try:
         iss.rotate(yaw, pitch, roll * -1)
         tempTube.setValue(ap.get_temperature())
         humidTube.setValue(ap.get_humidity())
+        pressureTube.setValue(ap.get_pressure())
         sleep(0.1)
 
 finally:

@@ -14,10 +14,9 @@ Installation
 Todo
 
 Structure
-============
+=========
 
-* datalogger - used to gather data from the astro pi sense hat and write it to a CSV file
-* minecraft - programs to interact with the astro pi board in minecraft 
+* spacecraft - spacecraft python module 
 * poc - proof of concept code used in the development
 * scripts - useful scripts!
 
@@ -25,9 +24,9 @@ Usage
 =====
 
 Data logger
-----------
+-----------
 
-The datalogger/astropidatalogger.py program reads all the data from the astro pi board and writes it to a CSV files - it is run using::
+The spacecraft/astropidatalogger.py program reads all the data from the astro pi board and writes it to a CSV files - it is run using::
 
     usage: astropidatalogger.py [-h] [-v] filename timetorun interval
    
@@ -45,10 +44,40 @@ The datalogger/astropidatalogger.py program reads all the data from the astro pi
 
 e.g. to run the data logger for 180 seconds reading data every 1 second::
 
-    sudo python astropidatalogger.py /home/pi/datafile.csv 180 1
+    sudo python3 astropidatalogger.py /home/pi/datafile.csv 180 1
+
+Data reader
+-----------
+
+The spacecraft/astropidatareader.py program reads CSV files created by the astropidatalogger.py program, its not invisage it is used to view data, but it provide a methof for testing a file has been created successfully and as well as being an example of how to use the AstroPiDataReader::
+
+    usage: astropidatareader.py [-h] [-v] filename
+    
+    Astro Pi Data Reader
+    
+    positional arguments:
+      filename       The input filename
+    
+    optional arguments:
+      -h, --help     show this help message and exit
+      -v, --verbose  Output verbose debug statements
+
+e.g. to read in the file /home/pi/datafile.csv ::
+
+    sudo python3 astropidatareader.py /home/pi/datafile.csv
+
+Interactive Minecraft Astro Pi
+------------------------------
+
+The spacecraft/mcinteractiveastropi.py creates a interactive astro pi in Minecraft which when hit (right clicked) with a sword it responds with a description and makes the interacts with the real astro pi.
+
+Start Minecraft: Pi edition, select/create a new game::
+
+    sudo python3 mcinteractiveastropi.py
+
 
 Documentation
-============
+=============
 
 Todo
 

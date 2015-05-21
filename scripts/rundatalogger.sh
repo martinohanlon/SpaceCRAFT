@@ -13,7 +13,7 @@ logfile="$outputdir/output.$dateandtime.log"
 mkdir -p $outputdir
 
 #run data logger
-sudo stdbuf -oL python /home/pi/SpaceCRAFT/datalogger/astropidatalogger.py $datafile $1 $2 > $logfile 2>&1
+sudo stdbuf -oL python /home/pi/SpaceCRAFT/spacecraft/astropidatalogger.py $datafile $1 $2 > $logfile 2>&1
 
 #gzip datafile
 gzip $datafile

@@ -1,7 +1,6 @@
 cd ~/SpaceCRAFT
-sudo rm ~/SpaceCRAFT/poc/*.pyc
-sudo rm ~/SpaceCRAFT/minecraft/*.pyc
-sudo rm ~/SpaceCRAFT/datalogger/*.pyc
-git add *
+sudo rm ~/SpaceCRAFT/spacecraft/*.pyc
+sudo rm -R ~/SpaceCRAFT/spacecraft/__pycache__
+git add -A
 git commit -m "$1"
 git push origin master

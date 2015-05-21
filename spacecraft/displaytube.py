@@ -22,7 +22,6 @@ class DisplayTube():
         height,
         minValue,
         maxValue,
-        value,
         blockId,
         blockData = 0):
 
@@ -31,13 +30,11 @@ class DisplayTube():
         self.height = height
         self.minValue = float(minValue)
         self.maxValue = float(maxValue)
-        self.value = float(value)
         self.numOfBlocks = -1
         self.blockId = blockId
         self.blockData = blockData
 
         self._buildTube()
-        self.setValue(self.value)
 
     def _buildTube(self):
         """
