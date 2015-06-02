@@ -3,8 +3,11 @@ from mcpi import block
 
 mc = Minecraft.create()
 
-mc.setBlocks(72,1,120,
-             120,1,72,
+mc.setBlocks(-25,30,-25,
+             25,30,25,
              block.STONE.id)
 
 
+mc.setBlocks(-25,31,-25,
+             25,40,25,
+             block.AIR.id)

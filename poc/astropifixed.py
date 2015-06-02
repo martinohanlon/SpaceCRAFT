@@ -6,7 +6,7 @@ try:
 except ImportError:
     import _thread as thread
 
-class AstroPiFixed(AstroPi):
+class AstroPiThreaded(AstroPi):
     """
     Temporary class which fixes an issue with Astro Pi's orientation
     """
@@ -36,10 +36,11 @@ class AstroPiFixed(AstroPi):
         
 #test
 if __name__ == "__main__":
-    ap = AstroPiFixed()
+    ap = AstroPiThreaded()
     try:
-        while(True):
-            print ap.get_orientation()
+        while True:
+            print(ap.get_orientation())
+            print(ap.get_temperature())
             sleep(0.1)
     finally:
         ap.stop()

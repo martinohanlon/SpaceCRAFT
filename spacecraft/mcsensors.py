@@ -4,7 +4,7 @@ Conceived by Hannah Belshaw
 Created by Martin O'Hanlon[http://www.stuffaboutcode.com]
 For the Raspberry Pi Foundation[https://www.raspberrypi.org]
 
-displaytube.py
+mcsensors.py
 
 A tower of glass blocks in minecraft that can show a value of
 blocks up the middle. Think Minecraft thermometer!

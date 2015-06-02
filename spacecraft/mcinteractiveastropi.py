@@ -12,7 +12,7 @@ hit (right clicked) with a sword
 from mcpi.minecraft import Minecraft
 from mcpi.minecraft import Vec3
 from mcpi import block
-from minecraftmodels import MCAstroPi
+from mcmodels import MCAstroPi
 from astro_pi import AstroPi
 from time import sleep
 

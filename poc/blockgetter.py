@@ -31,19 +31,22 @@ while(True):
             secondPos = subtractPos(blockHit.pos, middlePos)
             noOfPos = 0
             blockType = mc.getBlockWithData(blockHit.pos)
-            
-            func = "mc.setBlocks({}, {}, {}, {}, {}, {}, {}".format(firstPos.x,
-                                                                   firstPos.y,
-                                                                   firstPos.z,
-                                                                   secondPos.x,
-                                                                   secondPos.y,
-                                                                   secondPos.z,
-                                                                   blockType.id)
+            if firstPos == secondPos:
+                func = "mc.setBlock({}, {}, {}, {}".format(firstPos.x,
+                                                            firstPos.y,
+                                                            firstPos.z,
+                                                            blockType.id)
+
+            else:            
+                func = "mc.setBlocks({}, {}, {}, {}, {}, {}, {}".format(firstPos.x,
+                                                                       firstPos.y,
+                                                                       firstPos.z,
+                                                                       secondPos.x,
+                                                                       secondPos.y,
+                                                                       secondPos.z,
+                                                                       blockType.id)
             if blockType.data != 0:
                 func += ", " + str(blockType.data) 
             
             func += ")"
             print(func)
-                
-                                                                    
-

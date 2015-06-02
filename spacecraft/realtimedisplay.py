@@ -11,10 +11,10 @@ Displays information from the Astro Pi board in real time in Minecraft
 from mcpi.minecraft import Vec3
 from mcpi.minecraft import Minecraft
 from mcpi import block
-from minecraftmodels import ISS
-from minecraftmodels import MCAstroPi
-from displaytube import DisplayTube
-from astro_pi import AstroPi
+from mcmodels import ISS
+from mcmodels import MCAstroPi
+from mcsensors import DisplayTube
+from astropithreaded import AstroPiThreaded
 from time import sleep
 
 ROUNDINGFACTOR = 15
@@ -22,15 +22,17 @@ ROUNDINGFACTOR = 15
 def roundDeg(number):
     return round((number / ROUNDINGFACTOR),0) * ROUNDINGFACTOR
 
-ap = AstroPi()
+ap = AstroPiThreaded()
 ap.set_imu_config(True, True, True)
 
 mc = Minecraft.create()
 pos = Vec3(0, 5, 0)
 
+#mc.setBlocks(-30, 5, -30, 30, 50, 30, block.AIR.id)
+
 issPos = pos.clone()
 issPos.z += 10
-issPos.y += 5
+issPos.y += 25
 iss = ISS(mc, issPos)
 
 tempTubePos = pos.clone()
@@ -51,14 +53,18 @@ pressureTube = DisplayTube(mc, pressureTubePos, 10,
                            block.OBSIDIAN)
 
 try:
-
+    lastYaw, lastPitch, lastRoll = 0, 0, 0
     while(True):
+
         orientation = ap.get_orientation_degrees()
         yaw, pitch, roll = orientation["yaw"], orientation["pitch"], orientation["roll"]
         yaw, pitch, roll = roundDeg(yaw), roundDeg(pitch), roundDeg(roll)
         #print("yaw = {}; pitch = {}; roll = {}".format(yaw, pitch, roll))
         #print("yaw = {}; pitch = {}; roll = {}".format(orientation["yaw"], orientation["pitch"], orientation["pitch"]))
-        iss.rotate(yaw, pitch, roll * -1)
+        if yaw != lastYaw or pitch != lastPitch or roll != lastRoll:
+            iss.rotate(yaw, pitch, roll * -1)
+        lastYaw, lastPitch, lastRoll = yaw, pitch, roll
+
         tempTube.setValue(ap.get_temperature())
         humidTube.setValue(ap.get_humidity())
         pressureTube.setValue(ap.get_pressure())
