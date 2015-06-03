@@ -5,9 +5,11 @@
 try:
     import mcpi.minecraft as minecraft
     import mcpi.block as block
+    import mcpi.util as util
 except ImportError:
     import minecraft
     import block
+    import util
     
 from copy import deepcopy
 import time
@@ -316,17 +318,35 @@ class MinecraftShape:
             drawnSet = set(self.drawnShapeBlocks)
         currentSet = set(self.shapeBlocks)
 
+        blocksToUpdate = []
+        
         #work out the blocks which need to be cleared
         for blockToClear in drawnSet - currentSet:
-            self.mc.setBlock(blockToClear.actualPos.x, blockToClear.actualPos.y, blockToClear.actualPos.z, block.AIR.id)
+            #self.mc.setBlock(blockToClear.actualPos.x, blockToClear.actualPos.y, blockToClear.actualPos.z, block.AIR.id)
+            blocksToUpdate.append((blockToClear.actualPos.x, blockToClear.actualPos.y, blockToClear.actualPos.z, block.AIR.id, 0))
 
         #work out the blocks which have changed and need to be re-drawn
         for blockToDraw in currentSet - drawnSet:
-            self.mc.setBlock(blockToDraw.actualPos.x, blockToDraw.actualPos.y, blockToDraw.actualPos.z, blockToDraw.blockType, blockToDraw.blockData)
+            #self.mc.setBlock(blockToDraw.actualPos.x, blockToDraw.actualPos.y, blockToDraw.actualPos.z, blockToDraw.blockType, blockToDraw.blockData)
+            blocksToUpdate.append((blockToDraw.actualPos.x, blockToDraw.actualPos.y, blockToDraw.actualPos.z, blockToDraw.blockType, blockToDraw.blockData))
+
+        self._drawManyBlocks(blocksToUpdate)
 
         #update the blocks which have been drawn
         self.drawnShapeBlocks = deepcopy(self.shapeBlocks)
         self.visible = True
+
+    def _drawManyBlocks(self, blocksToDraw):
+        """
+        performance - sends many setBlock commands to Minecraft all at the same time rather than 1 by 1
+        """
+        self.mc.conn.drain()
+        s = ""
+        for block in blocksToDraw:
+            args = minecraft.intFloor(block)
+            s += "world.setBlock(%s)\n"%(util.flatten_parameters_to_string(args))
+        self.mc.conn.lastSent = s
+        self.mc.conn.socket.sendall(s.encode())
 
     def _draw_fullrefresh(self):
         """
