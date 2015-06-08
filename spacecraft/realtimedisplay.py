@@ -26,7 +26,8 @@ ap = AstroPiThreaded()
 ap.set_imu_config(True, True, True)
 
 mc = Minecraft.create()
-pos = Vec3(0, 5, 0)
+pos = mc.player.getTilePos()
+pos.y = mc.getHeight(pos.x, pos.z)
 
 #mc.setBlocks(-30, 5, -30, 30, 50, 30, block.AIR.id)
 

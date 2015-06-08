@@ -107,14 +107,17 @@ DIGITS = {
 
 DIGITWIDTH = 3
 DIGITHEIGHT = 5
-DIGITBLOCKID = block.WOOL.id
-DIGITBLOCKDATA = 11
 
-class MinecraftClock():
+class Clock():
+    """
+    A Minecraft clock which will display the date and time as blocks in the sky
+    """
 
-    def __init__(self, mc, pos):
+    def __init__(self, mc, pos, blockType = block.STONE.id, blockData = 0):
         self.mc = mc
         self.pos = pos
+        self.blockType = blockType
+        self.blockData = blockData
 
         #find the positions of the digits
         self.daypos = pos
@@ -140,6 +143,9 @@ class MinecraftClock():
         self._drawClock()
 
     def _addSpaceToPos(self, pos, x = 0, y = 0, z = 0):
+        """
+        Internal. Utility function use to add a value to a Vec3 object and return a new instance
+        """
         newpos = pos.clone()
         newpos.x += x
         newpos.y += y
@@ -147,6 +153,9 @@ class MinecraftClock():
         return newpos
 
     def setTime(self, newtime):
+        """
+        Sets the time and date on the clock
+        """        
         year, month, day, hour, minute, second = self._splitTime(newtime)
         self._drawTime(year, month, day, hour, minute, second)
 
@@ -157,11 +166,17 @@ class MinecraftClock():
         self.setTime(time())
 
     def _formatNumber(self, number):
+        """
+        Internal. Pads a number with 0's and truncates to 2 chars
+        """
         #I want to pad a number with a zero, and make sure its only 2 characters 
         numstr = "0" + str(number)
         return numstr[-2:]
 
     def _drawClock(self):
+        """
+        Internal. Draws the clock, i.e. the colons and dots
+        """
         self._drawDigit(self.slash1pos, ".")
         self._drawDigit(self.slash2pos, ".")
         self._drawDigit(self.colon1pos, ":")
@@ -169,8 +184,9 @@ class MinecraftClock():
         
     def _drawTime(self, year, month, day, hour, minute, second):
         """
-        DD/MM/YY
-        HH:NN:SS
+        Internal. Draws the time in minecraft in the format:
+            DD.MM.YY
+            HH:NN:SS
         """
         if year != self.year:
             self._drawNumber(self.yearpos, self._formatNumber(year))
@@ -199,9 +215,9 @@ class MinecraftClock():
             currentPos.x += DIGITWIDTH + 1
             
     def _drawDigit(self, topLeftPos, digit):
-        #is digit in my list?
         currentPos = topLeftPos.clone()
-
+        
+        #is digit in my list?
         if digit in DIGITS.keys():
             #loop through the charactors
             for char in DIGITS[digit]:
@@ -209,7 +225,7 @@ class MinecraftClock():
                     #create a block
                     currentPos.x += 1
                     self.mc.setBlock(currentPos.x, currentPos.y, currentPos.z,
-                                     DIGITBLOCKID, DIGITBLOCKDATA)
+                                     self.blockType, self.blockData)
                 elif char == " ":
                     #create a block of air
                     currentPos.x += 1
@@ -231,19 +247,21 @@ class MinecraftClock():
         return year, month, day, hour, minute, second
     
     def clear(self):
+        """
+        Clears the block
+        """
         self.mc.setBlocks(
             self.pos.x, self.pos.y, self.pos.x,
             self.pos.x + (DIGITWIDTH * 8) + 3, self.pos.y - (DIGITHEIGHT * 2) - 1, self.pos.z,
             block.AIR.id)
 
-
-
+#test
 if __name__ == "__main__":
     mc = Minecraft.create()
     pos = mc.player.getTilePos()
     pos.y += 10
     try:
-        clock = MinecraftClock(mc, pos)
+        clock = Clock(mc, pos, block.WOOL.id, 11)
         while True:
             clock.updateTime()
             sleep(0.1)

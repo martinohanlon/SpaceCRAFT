@@ -317,43 +317,23 @@ class MinecraftShape:
         else:
             drawnSet = set(self.drawnShapeBlocks)
         currentSet = set(self.shapeBlocks)
-
-        blocksToUpdate = []
         
         #work out the blocks which need to be cleared
         for blockToClear in drawnSet - currentSet:
-            #self.mc.setBlock(blockToClear.actualPos.x, blockToClear.actualPos.y, blockToClear.actualPos.z, block.AIR.id)
-            blocksToUpdate.append((blockToClear.actualPos.x, blockToClear.actualPos.y, blockToClear.actualPos.z, block.AIR.id, 0))
+            self.mc.setBlock(blockToClear.actualPos.x, blockToClear.actualPos.y, blockToClear.actualPos.z, block.AIR.id)
 
         #work out the blocks which have changed and need to be re-drawn
         for blockToDraw in currentSet - drawnSet:
-            #self.mc.setBlock(blockToDraw.actualPos.x, blockToDraw.actualPos.y, blockToDraw.actualPos.z, blockToDraw.blockType, blockToDraw.blockData)
-            blocksToUpdate.append((blockToDraw.actualPos.x, blockToDraw.actualPos.y, blockToDraw.actualPos.z, blockToDraw.blockType, blockToDraw.blockData))
-
-        self._drawManyBlocks(blocksToUpdate)
+            self.mc.setBlock(blockToDraw.actualPos.x, blockToDraw.actualPos.y, blockToDraw.actualPos.z, blockToDraw.blockType, blockToDraw.blockData)
 
         #update the blocks which have been drawn
         self.drawnShapeBlocks = deepcopy(self.shapeBlocks)
         self.visible = True
 
-    def _drawManyBlocks(self, blocksToDraw):
+    def redraw(self):
         """
-        performance - sends many setBlock commands to Minecraft all at the same time rather than 1 by 1
-        """
-        self.mc.conn.drain()
-        s = ""
-        for block in blocksToDraw:
-            args = minecraft.intFloor(block)
-            s += "world.setBlock(%s)\n"%(util.flatten_parameters_to_string(args))
-        self.mc.conn.lastSent = s
-        self.mc.conn.socket.sendall(s.encode())
-
-    def _draw_fullrefresh(self):
-        """
-        USED FOR DEBUGGING ONLY
         draws the shape in Minecraft, by clearing all the blocks and redrawing them 
         """
-
         if self.drawnShapeBlocks != None:
             for blockToClear in self.drawnShapeBlocks:
                 self.mc.setBlock(blockToClear.actualPos.x, blockToClear.actualPos.y, blockToClear.actualPos.z, block.AIR.id)
@@ -389,15 +369,17 @@ class MinecraftShape:
     def move(self, x, y, z):
         """
         moves the position of the shape to x,y,z
-        """        
-        self.position.x = x
-        self.position.y = y
-        self.position.z = z
+        """
+        #is the position different
+        if self.position.x != x or self.position.y != y or self.position.z != z:
+            self.position.x = x
+            self.position.y = y
+            self.position.z = z
 
-        self._recalcBlocks()
-        
-        if self.visible:
-            self.draw()
+            self._recalcBlocks()
+            
+            if self.visible:
+                self.draw()
 
     def _recalcBlocks(self):
         """
@@ -424,15 +406,18 @@ class MinecraftShape:
         """
         sets the rotation of a shape by yaw, pitch and roll
         """
-        #update values
-        self.yaw, self.pitch, self.roll = yaw, pitch, roll
-        
-        #recalc all the block positions
-        self._recalcBlocks()
+        #is the rotation different?
+        if yaw != self.yaw or pitch != self.pitch or roll != self.roll:
+            
+            #update values
+            self.yaw, self.pitch, self.roll = yaw, pitch, roll
+            
+            #recalc all the block positions
+            self._recalcBlocks()
 
-        #if its visible redraw it
-        if self.visible:
-            self.draw()
+            #if its visible redraw it
+            if self.visible:
+                self.draw()
 
     def rotateBy(self, yaw, pitch, roll):
         """
@@ -600,7 +585,8 @@ if __name__ == "__main__":
     mc = minecraft.Minecraft.create()
 
     #test shape
-    pos = minecraft.Vec3(0,40,0)
+    pos = mc.player.getTilePos()
+    pos.y += 40
 
     myShape = MinecraftShape(mc, pos)
     try:
@@ -635,8 +621,9 @@ if __name__ == "__main__":
 
         for count in range(0,5):
             myShape.moveBy(1,0,0)
+            time.sleep(0.5)
 
-        time.sleep(10)
+        time.sleep(5)
     finally:
         myShape.clear()
     
