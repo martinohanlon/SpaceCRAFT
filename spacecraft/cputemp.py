@@ -11,7 +11,7 @@ class CPUTemp:
     
     def read(self):
         self.tempfile.seek(0)
-        return self.tempfile.read(5)
+        return self.tempfile.read().rstrip()
 
     def get_temperature(self):
         return self.get_temperature_in_c()

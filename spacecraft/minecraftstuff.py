@@ -364,7 +364,7 @@ class MinecraftShape:
         """
         moves the position of the shape by x,y,z
         """
-        self.move(self.position.x + x, self.position.y + y, self.position.z + z)
+        return self.move(self.position.x + x, self.position.y + y, self.position.z + z)
 
     def move(self, x, y, z):
         """
@@ -380,6 +380,12 @@ class MinecraftShape:
             
             if self.visible:
                 self.draw()
+
+            return True
+        
+        else:
+            
+            return False
 
     def _recalcBlocks(self):
         """
@@ -419,11 +425,17 @@ class MinecraftShape:
             if self.visible:
                 self.draw()
 
+            return True
+        
+        else:
+            
+            return False
+
     def rotateBy(self, yaw, pitch, roll):
         """
         increments the rotation of a shape by yaw, pitch and roll
         """
-        self.rotate(self.yaw + yaw, self.pitch + pitch, self.roll + roll)
+        return self.rotate(self.yaw + yaw, self.pitch + pitch, self.roll + roll)
         
     def _moveShapeBlock(self, shapeBlock, x, y, z):
         """

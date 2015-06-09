@@ -6,15 +6,110 @@ For the Raspberry Pi Foundation[https://www.raspberrypi.org]
 
 mcsensors.py
 
+A collection of minecraft objects which can display sensor data
+
 A tower of glass blocks in minecraft that can show a value of
 blocks up the middle. Think Minecraft thermometer!
 """
 from mcpi.minecraft import Minecraft
 from mcpi.minecraft import Vec3
 from mcpi import block
+from minecraftstuff import MinecraftShape
 from time import sleep
 
+class BarGraph():
+    """
+    A bar graph in minecraft
+    """
+    def __init__(
+        self,
+        mc,
+        pos,
+        height,
+        maxLength,
+        minValue,
+        maxValue,
+        blockId,
+        blockData = 0,
+        xIncrement = 1,
+        zIncrement = 0):
+
+        #store the values of the bar graph
+        self.mc = mc
+        self.pos = pos
+        self.height = height
+        self.maxLength = maxLength
+        self.minValue = minValue
+        self.maxValue = maxValue
+        self.blockId = blockId
+        self.blockData = blockData
+        self.xIncrement = xIncrement
+        self.zIncrement = zIncrement
+
+        #set the position of the next bar in the graph
+        self.barPos = pos.clone()
+        
+        self.graphLength = 0
+
+    def addValue(self, value):
+        """
+        Add a single value to the bar graph
+    `   """
+        if value > self.maxValue: value = self.maxValue
+        if value < self.minValue: value = self.minValue
+
+        #calculate how far up the block go
+        numOfBlocksUp = self._calcNumOfBlocks(value)
+
+        #do the bottom of the bar graph
+        self.mc.setBlocks(
+            self.barPos.x, self.barPos.y, self.barPos.z,
+            self.barPos.x, self.barPos.y + numOfBlocksUp, self.barPos.z,
+            self.blockId, self.blockData)
+
+        #do the top of the bar graph
+        self.mc.setBlocks(
+            self.barPos.x, self.barPos.y + numOfBlocksUp + 1, self.barPos.z,
+            self.barPos.x, self.barPos.y + self.height, self.barPos.z,
+            block.AIR.id)
+        
+        #increment the length and reset if its over the maximum
+        self.graphLength += 1
+        if self.graphLength == self.maxLength:
+            self.graphLength = 0
+            self.barPos = pos.clone()
+        else:
+            #move the bar on
+            self.barPos.x += self.xIncrement
+            self.barPos.z += self.zIncrement
+
+    def clear(self):
+        """
+        Clears the bar graph
+    `   """
+        self.mc.setBlocks(
+            self.pos.x,
+            self.pos.y,
+            self.pos.z,
+            self.pos.x + (self.maxLength * self.xIncrement),
+            self.pos.y + self.height,
+            self.pos.x + (self.maxLength * self.zIncrement),
+            block.AIR.id)
+
+    def _calcNumOfBlocks(self, value):
+        """
+        Internal. Calculate how far up the graph the blocks should go based
+        on the min, max and height
+        """
+        scale = self.maxValue - self.minValue
+        flatValue = value - self.minValue
+        return int(round((flatValue / scale) * self.height))
+
 class DisplayTube():
+    """
+    A tower of glass blocks in minecraft that can show a value of
+    blocks up the middle. Think Minecraft thermometer!
+    """
     def __init__(
         self,
         mc,
@@ -33,6 +128,8 @@ class DisplayTube():
         self.numOfBlocks = -1
         self.blockId = blockId
         self.blockData = blockData
+
+        self.value = None
 
         self._buildTube()
 
@@ -69,30 +166,34 @@ class DisplayTube():
         """
         Sets the value in the tube
         """
-        self.value = float(value)
 
-        #update the min and max values if this new value is outside them
-        if value > self.maxValue: self.maxValue = value
-        if value < self.minValue: self.minValue = value        
-        
-        newNumOfBlocks = self._calcNumOfBlocks(self.value)
+        #has the value changed?
+        if self.value != value:
+            
+            self.value = float(value)
 
-        #debug
-        #print("value = {}, blocks = {}".format(value, newNumOfBlocks))
-        
-        #has the number of blocks changed?
-        if newNumOfBlocks < self.numOfBlocks:
-            #its less so set the blocks at the top to AIR
-            self.mc.setBlocks(self.pos.x, self.pos.y + self.numOfBlocks, self.pos.z,
-                              self.pos.x, self.pos.y + newNumOfBlocks + 1, self.pos.z,
-                              block.AIR.id)
-        elif newNumOfBlocks > self.numOfBlocks:
-            #its more so set the blocks at the top to the blockType
-            self.mc.setBlocks(self.pos.x, self.pos.y + self.numOfBlocks + 1, self.pos.z,
-                              self.pos.x, self.pos.y + newNumOfBlocks, self.pos.z,
-                              self.blockId, self.blockData)
+            #update the min and max values if this new value is outside them
+            if value > self.maxValue: self.maxValue = value
+            if value < self.minValue: self.minValue = value        
+            
+            newNumOfBlocks = self._calcNumOfBlocks(self.value)
 
-        self.numOfBlocks = newNumOfBlocks
+            #debug
+            #print("value = {}, blocks = {}".format(value, newNumOfBlocks))
+            
+            #has the number of blocks changed?
+            if newNumOfBlocks < self.numOfBlocks:
+                #its less so set the blocks at the top to AIR
+                self.mc.setBlocks(self.pos.x, self.pos.y + self.numOfBlocks, self.pos.z,
+                                  self.pos.x, self.pos.y + newNumOfBlocks + 1, self.pos.z,
+                                  block.AIR.id)
+            elif newNumOfBlocks > self.numOfBlocks:
+                #its more so set the blocks at the top to the blockType
+                self.mc.setBlocks(self.pos.x, self.pos.y + self.numOfBlocks + 1, self.pos.z,
+                                  self.pos.x, self.pos.y + newNumOfBlocks, self.pos.z,
+                                  self.blockId, self.blockData)
+
+            self.numOfBlocks = newNumOfBlocks
          
     def clear(self):
         """
@@ -116,7 +217,7 @@ class DisplayTube():
         self.mc.setBlock(self.pos.x, self.pos.y - 1, self.pos.z, block.AIR.id)
 
 #test
-if __name__ == "__main__":
+if __name__ == "__main__displaytube":
     mc = Minecraft.create()
     pos = Vec3(0,10,0)
     tube = DisplayTube(mc, pos, 10, 0, 10, 0, block.LAVA.id)
@@ -129,5 +230,24 @@ if __name__ == "__main__":
         for count in range(10,0,-1):
             tube.setValue(count)
             sleep(1)
+    finally:
+        tube.clear()
+
+if __name__ == "__main__":
+
+
+    mc = Minecraft.create()
+    pos = Vec3(0,0,0)
+    mc.player.setTilePos(0,10,0)
+    tube = BarGraph(mc, pos, 20, 20, 0, 20, block.STONE.id)
+    try:
+        sleep(1)
+        for count in range(0,20):
+            print(count)
+            tube.addValue(count)
+            sleep(0.2)
+        for count in range(10,0,-1):
+            tube.addValue(count)
+            sleep(0.2)
     finally:
         tube.clear()

@@ -30,6 +30,7 @@ if __name__ == "__main__":
         while(found_row):
             #read the values
             time = apreader.get_time()
+            cpu_temp = apreader.get_cpu_temperature()
             temp_humid = apreader.get_temperature_from_humidity()
             temp_press = apreader.get_temperature_from_pressure()
             pressure = apreader.get_pressure()
@@ -38,10 +39,12 @@ if __name__ == "__main__":
             comp = apreader.get_compass_raw()
             gyro = apreader.get_gyroscope_raw()
             accel = apreader.get_accelerometer_raw()
+            joystick = apreader.get_joystick()
 
             #print them to the screen
-            print("{} {} {} {} {} {} {} {} {}".format(
+            print("{} {} {} {} {} {} {} {} {} {} {}".format(
                 time,
+                cpu_temp,
                 temp_humid,
                 temp_press,
                 pressure,
@@ -49,7 +52,8 @@ if __name__ == "__main__":
                 ori_rad,
                 comp,
                 gyro,
-                accel))
+                accel,
+                joystick))
 
             #move to the next row
             found_row = apreader.next()

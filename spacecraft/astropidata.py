@@ -7,15 +7,26 @@ For the Raspberry Pi Foundation[https://www.raspberrypi.org]
 astropidata.py
 
 Classes for writing astro pi data to CSV files and reading it back again
+
+astro_pi module is required for AstroPiDataLogger but not for AstroPiDataReader
 """
 from csv import DictWriter, DictReader
 from datetime import datetime
 from time import sleep, time
-from astro_pi import AstroPi
+
+try: 
+    from astropithreaded import AstroPiThreaded
+except ImportError:
+    print("Error importing astro_pi module - required for AstroPiDataLogger")
+
 from astropiprogressbar import AstroPiBelshawProgressBar
+from cputemp import CPUTemp
+import pygame
+from pygame.locals import *
 
 #field name constants
 TIME = "time"
+CPU_TEMP = "cpu temperature"
 HUMIDITY = "humidity"
 PRESSURE = "pressure"
 TEMP_HUMIDITY = "temperature (humidity)"
@@ -35,6 +46,11 @@ GYRO_RAW_Z = "gyroscope raw z"
 ACCEL_RAW_X = "accelerometer raw x"
 ACCEL_RAW_Y = "accelerometer raw y"
 ACCEL_RAW_Z = "accelerometer raw z"
+JOYSTICKUP = "joystick up"
+JOYSTICKDOWN = "joystick down"
+JOYSTICKRIGHT = "joystick right"
+JOYSTICKLEFT = "joystick left"
+JOYSTICKBUTTON = "joystick button"
 
 class AstroPiDataLogger():
     """
@@ -42,6 +58,7 @@ class AstroPiDataLogger():
     """
     #order of fieldnames for csv output file
     FIELDNAMES = [TIME,
+                  CPU_TEMP,
                   HUMIDITY,
                   PRESSURE,
                   TEMP_HUMIDITY,
@@ -60,25 +77,20 @@ class AstroPiDataLogger():
                   GYRO_RAW_Z,
                   ACCEL_RAW_X,
                   ACCEL_RAW_Y,
-                  ACCEL_RAW_Z]
+                  ACCEL_RAW_Z,
+                  JOYSTICKUP,
+                  JOYSTICKDOWN,
+                  JOYSTICKRIGHT,
+                  JOYSTICKLEFT,
+                  JOYSTICKBUTTON]
     
     def __init__(self, verbose = False):
 
         self.verbose = verbose
 
         self._write_message("Astro Pi Data Logger")
-        self._write_message("Starting Sense HAT")
-        
-        #create astro pi object
-        self.ap = AstroPi()
 
-        #set imu config (just in case anything has changed it!)
-        self.ap.set_imu_config(True, True, True)
-
-        #call get_humidity, get_pressure and get_orientation to init the sensors
-        self.ap.get_humidity()
-        self.ap.get_pressure()
-        self.ap.get_orientation()
+        self._init_pygame()
 
     def _write_message(self, message):
         """
@@ -93,89 +105,140 @@ class AstroPiDataLogger():
         Starts the data logger, runs for the 'time to run' in seconds, writing data every 'interval' seconds. 
         """
 
+        #create astro pi object
+        self._write_message("Starting Sense HAT")
+        #use the threaded astro pi class, so orientation stay in sync
+        ap = AstroPiThreaded()
+
         #create the astro pi progress bar
-        progressbar = AstroPiBelshawProgressBar(self.ap)
-        
-        self._write_message("Starting data logger")
-        self._write_message(" filename - {}".format(filename))
-        self._write_message(" time to run - {} seconds".format(timetorun))
-        self._write_message(" interval - {} seconds".format(interval))
+        progressbar = AstroPiBelshawProgressBar(ap)
 
-        #open file for writing
-        self._write_message("Creating file {}".format(filename))
-        
-        with open(filename, "w") as datafile:
-            #create the writer
-            writer = DictWriter(datafile, fieldnames = self.FIELDNAMES)
+        try:
 
-            #write the csv file header
-            writer.writeheader()
+            self._write_message("Initialising Sense HAT")
+            self._init_astro_pi(ap)
 
-            #get the time the program started
-            starttime = time()  
+            #open cpu temperature file
+            self._write_message("Opening CPU temperature")
+            with CPUTemp() as cpu_temp:
+            
+                self._write_message("Starting data logger")
+                self._write_message(" filename - {}".format(filename))
+                self._write_message(" time to run - {} seconds".format(timetorun))
+                self._write_message(" interval - {} seconds".format(interval))
 
-            self._write_message("Writing data")
+                #open file for writing
+                self._write_message("Creating file {}".format(filename))
+                with open(filename, "w") as datafile:
+                    
+                    #create the writer
+                    writer = DictWriter(datafile, fieldnames = self.FIELDNAMES)
+                    
+                    #write the csv file header
+                    writer.writeheader()
 
-            nextrowtime = starttime
-            #loop until the time to run as passed
-            while((time() - starttime) < timetorun):
+                    #get the time the program started
+                    starttime = time()  
 
-                #read data and write to csv file
-                datarow = self._read_data()
-                writer.writerow(datarow)
+                    self._write_message("Writing data")
+
+                    nextrowtime = starttime
+                    #loop until the time to run as passed
+                    while((time() - starttime) < timetorun):
+
+                        #read data and write to csv file
+                        datarow = self._read_data(ap, cpu_temp)
+                        writer.writerow(datarow)
+                        
+                        #wait until the next interval
+                        nextrowtime = nextrowtime + interval
+                        while(time() < nextrowtime):
+                            sleep(0.01)
+
+                        progressbar.next()
                 
-                #wait until the next interval
-                nextrowtime = nextrowtime + interval
-                while(time() < nextrowtime):
-                    #remove once astro pi bug is fixed
-                    #keep getting the orientation to keep it in sync
-                    self.ap.get_orientation()
-                    sleep(0.01)
+        finally:
+            #stop the astro pi thread which reads the orientation
+            ap.stop()
 
-                progressbar.next()
+            #clear the progress bar 
+            progressbar.clear()
+                    
+            self._write_message("Finished")
 
-        progressbar.clear()
+    def _init_astro_pi(self, ap):
+        #set imu config (just in case anything has changed it!)
+        ap.set_imu_config(True, True, True)
+
+        #call get_humidity, get_pressure and get_orientation to init the sensors
+        ap.get_humidity()
+        ap.get_pressure()
+        ap.get_orientation()
+
+    def _init_pygame(self):
+        pygame.init()
         
-        self._write_message("Finished")
+        pygame.display.set_mode((640, 480))
 
-    def _read_data(self):
+        pygame.event.set_allowed(KEYUP)
+
+    def _read_data(self, ap, cpu_temp):
         """
         Internal. Reads data from the astro pi sensors and creates a dictionary of the fields
         """
 
         datarow = {}
         datarow[TIME] = datetime.now()
+
+        datarow[CPU_TEMP] = cpu_temp.get_temperature()
         
-        datarow[HUMIDITY] = self.ap.get_humidity()
-        datarow[PRESSURE] = self.ap.get_pressure()
+        datarow[HUMIDITY] = ap.get_humidity()
+        datarow[PRESSURE] = ap.get_pressure()
 
-        datarow[TEMP_HUMIDITY] = self.ap.get_temperature_from_humidity()
-        datarow[TEMP_PRESSURE] = self.ap.get_temperature_from_pressure()
+        datarow[TEMP_HUMIDITY] = ap.get_temperature_from_humidity()
+        datarow[TEMP_PRESSURE] = ap.get_temperature_from_pressure()
 
-        orientation_rad = self.ap.get_orientation_radians()
+        orientation_rad = ap.get_orientation_radians()
         datarow[ORIENTATION_RAD_PITCH] = orientation_rad["pitch"]
         datarow[ORIENTATION_RAD_YAW] = orientation_rad["yaw"]
         datarow[ORIENTATION_RAD_ROLL] = orientation_rad["roll"]
         
-        orientation_deg = self.ap.get_orientation_degrees()
+        orientation_deg = ap.get_orientation_degrees()
         datarow[ORIENTATION_DEG_PITCH] = orientation_deg["pitch"]
         datarow[ORIENTATION_DEG_YAW] = orientation_deg["yaw"]
         datarow[ORIENTATION_DEG_ROLL] = orientation_deg["roll"]
         
-        compass_raw = self.ap.get_compass_raw()
+        compass_raw = ap.get_compass_raw()
         datarow[COMPASS_RAW_X] = compass_raw["x"]
         datarow[COMPASS_RAW_Y] = compass_raw["y"]
         datarow[COMPASS_RAW_Z] = compass_raw["z"]
 
-        gyro_raw = self.ap.get_gyroscope_raw()
+        gyro_raw = ap.get_gyroscope_raw()
         datarow[GYRO_RAW_X] = gyro_raw["x"]
         datarow[GYRO_RAW_Y] = gyro_raw["y"]
         datarow[GYRO_RAW_Z] = gyro_raw["z"]
 
-        accel_raw = self.ap.get_accelerometer_raw()
+        accel_raw = ap.get_accelerometer_raw()
         datarow[ACCEL_RAW_X] = accel_raw["x"]
         datarow[ACCEL_RAW_Y] = accel_raw["y"]
         datarow[ACCEL_RAW_Z] = accel_raw["z"]
+
+        datarow[JOYSTICKUP] = 0
+        datarow[JOYSTICKDOWN] = 0
+        datarow[JOYSTICKRIGHT] = 0
+        datarow[JOYSTICKLEFT] = 0
+        datarow[JOYSTICKBUTTON] = 0
+        for event in pygame.event.get():
+            if event.key == pygame.K_DOWN:
+                datarow[JOYSTICKUP] = 1
+            elif event.key == pygame.K_UP:
+                datarow[JOYSTICKDOWN] = 1
+            elif event.key == pygame.K_LEFT:
+                datarow[JOYSTICKRIGHT] = 1
+            elif event.key == pygame.K_RIGHT:
+                datarow[JOYSTICKLEFT] = 1
+            elif event.key == pygame.K_RETURN:
+                datarow[JOYSTICKBUTTON] = 1
 
         return datarow
 
@@ -281,3 +344,13 @@ class AstroPiDataReader():
         return {"x": self.data[ACCEL_RAW_X],
                 "y": self.data[ACCEL_RAW_Y],
                 "z": self.data[ACCEL_RAW_Z]}
+
+    def get_cpu_temperature(self):
+        return self.data[CPU_TEMP]
+
+    def get_joystick(self):
+        return {"up": self.data[JOYSTICKUP],
+                "down": self.data[JOYSTICKDOWN],
+                "left": self.data[JOYSTICKLEFT],
+                "right": self.data[JOYSTICKRIGHT],
+                "button": self.data[JOYSTICKBUTTON]}

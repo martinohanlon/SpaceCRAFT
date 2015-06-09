@@ -232,25 +232,77 @@ class Rocket(MinecraftShape):
         #block on the top
         self.setBlock(0, 12, 0, 155)
 
-        
         #make the arrow visible
         self.draw()
+
+class Stairs():
+    def __init__(self, mc, pos, width, height, blockId, blockData = 0):
+        self.mc = mc
+        self.pos = pos
+        self.width = width
+        self.height = height
+        self.blockId = blockId
+        self.blockData = blockData
+
+    def _drawStairs(self, blockId, blockData = 0):
+        x = self.pos.x
+        y = self.pos.y
+        z = self.pos.z
+
+        xIncrement = -1
+        zIncrement = 1
+
+        currentWidth = 0
+
+        #keep building steps until we have reached the height
+        while y < self.pos.y + self.height:
+            self.mc.setBlock(x, y, z, blockId, blockData)
+            #if we have reached the width change step direction
+            currentWidth += 1
+            if currentWidth == self.width:
+                
+                currentWidth = 1
+                if xIncrement == -1 and zIncrement == 1:
+                    xIncrement, zIncrement = 1, 1
+                    
+                elif xIncrement == 1 and zIncrement == 1:
+                    xIncrement, zIncrement = 1, -1
+                    
+                elif xIncrement == 1 and zIncrement == -1:
+                    xIncrement, zIncrement = -1, -1
+                    
+                elif xIncrement == -1 and zIncrement == -1:
+                    xIncrement, zIncrement = -1, 1
+            #move the step on
+            x += xIncrement
+            y += 1
+            z += zIncrement
+
+    def draw(self):
+        self._drawStairs(self.blockId, self.blockData)
+        
+    def clear(self):
+        self._drawStairs(block.AIR.id)
 
 #test
 if __name__ == "__main__":
 
     mc = Minecraft.create()
 
-    isspos = Vec3(0, 30, 0)
+    #isspos = Vec3(0, 30, 0)
     #mcastropipos = Vec3(0, 20, 0)
+    stairspos = Vec3(0,0,0)
 
-    iss = ISS(mc, isspos)
+    #iss = ISS(mc, isspos)
     #mcastropi = MCAstroPi(mc, mcastropipos)
+    stairs = Stairs(mc, stairspos, 5, 65, block.IRON_BLOCK.id)
+    stairs.draw()
     
     try:
-        sleep(5)
+        sleep(20)
 
     finally:
-        iss.clear()
+        #iss.clear()
         #mcastropi.clear()
+        stairs.clear()
 
