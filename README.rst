@@ -113,6 +113,7 @@ JOYSTICKDOWN          joystick down               1 if the joystick was pushed d
 JOYSTICKRIGHT         joystick right              1 if the joystick was pushed right else 0
 JOYSTICKLEFT          joystick left               1 if the joystick was pushed left else 0
 JOYSTICKBUTTON        joystick button             1 if the joystick button was pushed else 0
+===================== =========================== ===============================================
 
 The Python Constant is used in conjunction with the AstroPiLogger and AstroPiReader classes to reference fields.
 The File Header is output on the first row the CSV file.
