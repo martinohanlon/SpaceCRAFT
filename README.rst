@@ -6,7 +6,7 @@ IN PROGRESS!!!
 
 Todo. 
 
-Conceived by Hannah Belshaw, from Cumnor House Girl’s School, created by Martin O'Hanlon, `Stuff about="code"`_.
+Conceived by Hannah Belshaw, from Cumnor House Girlâ€™s School, created by Martin O'Hanlon, `Stuff about="code"`_.
 
 Installation
 ============
