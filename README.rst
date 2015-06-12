@@ -62,7 +62,7 @@ The spacecraft/astropidatareader.py program reads CSV files created by the astro
       -h, --help     show this help message and exit
       -v, --verbose  Output verbose debug statements
 
-e.g. to read in the file /home/pi/datafile.csv ::
+e.g. to read in the file /home/pi/datafile.csv::
 
     sudo python3 astropidatareader.py /home/pi/datafile.csv
 
@@ -83,12 +83,11 @@ Documentation
 Astro Pi Data
 -------------
 The spacecraft.astropidata module contains 2 classes:
+
 * AstroPiDataLogger - writing data from the astro pi computer to a file
 * AstroPiDataReader - reading it back
 
-AstroPiDataLogger
-`````````````````
-TData structure
+Data structure
 ``````````````
 The AstroPiDataLogger creates a `CSV`_ file which contains the following fields seperated by a comma (,). This structure can be read by the AstroPiDataReader.
 
@@ -125,13 +124,16 @@ JOYSTICKBUTTON        joystick button             1 if the joystick button was p
 
 The Python Constant is used in conjunction with the AstroPiLogger and AstroPiReader classes to reference fields.
 The File Header is output on the first row the CSV file.
-he data logger only contains one function, `start(filename, timetorun, interval)`, which expects the following parameters to be passed:
+
+AstroPiDataLogger
+`````````````````
+The data logger only contains one function, `start(filename, timetorun, interval)`, which expects the following parameters to be passed:
+
 * `filename` - the path and filename where the astro pi data is to be written
 * `timetorun` - the time in seconds that the data logger should run for
 * `interval` - how often in seconds the data logger should write to the file
 
-To read data from the astro pi every 1 second for 180 seconds to the file /home/pi/astropidata.csv you would use the following code
-
+To read data from the astro pi every 1 second for 180 seconds to the file /home/pi/astropidata.csv you would use the following code ::
     #import AstroPiDataLogger
     from spacecraft.astropidata import AstroPiDataLogger
     
@@ -141,8 +143,7 @@ To read data from the astro pi every 1 second for 180 seconds to the file /home/
     #start the data logger
     logger.start("/home/pi/astropidata.csv", 180, 1)
 
-AstroPiDataLogger can be made to print verbose progress messages by passing True when it is created:
-
+AstroPiDataLogger can be made to print verbose progress messages by passing True when it is created::
     logger = AstroPiDataLogger(True)
 
 AstroPiDataReader
@@ -156,6 +157,7 @@ Minecraft Models
 SpaceCRAFT contains a number of minecraft models, in the `spacecraft.mcmodels` module, which you can include in your programs.
 
 The following minecraft models are included:
+
 * ISS - the international space station
 * MCAstroPi - a Raspberry Pi with Astro Pi Sense HAT attached
 * Rocket - a rocket similar to those drawn my children in the 80's
@@ -165,8 +167,7 @@ The following minecraft models are included:
 
 ISS, MCAstroPi, Rocket, LaunchPad, Arrow
 ````````````````````````````````````````
-To create a model you need to pass a minecraft connection and a position of where you want the model:
-
+To create a model you need to pass a minecraft connection and a position of where you want the model::
     #import ISS model from spacecraft.mcmodels
     from spacecraft.mcmodels import ISS
     
@@ -183,6 +184,7 @@ To create a model you need to pass a minecraft connection and a position of wher
     iss = ISS(mc, pos)
 
 These models are all based on (inherited from) the minecraftstuff.MinecraftShape class and supports the following:
+
 * `move(x, y, z)` - move the shape to a specific x, y, z
 * `moveBy(x, y, z)` - move the shape by that number of blocks in x, y, z
 * `rotate(yaw, pitch, roll)` - rotate the shape by a yaw, pitch and roll (in degrees)
@@ -199,8 +201,7 @@ These models are all based on (inherited from) the minecraftstuff.MinecraftShape
 
 Rocket
 ``````
-The rocket model can also be launched using the `launch(height)` function, height is the number of blocks the rocket should fly upwards:
-
+The rocket model can also be launched using the `launch(height)` function, height is the number of blocks the rocket should fly upwards::
     #import rocket model from spacecraft.mcmodels
     from spacecraft.mcmodels import Rocket
     
@@ -222,6 +223,7 @@ The rocket model can also be launched using the `launch(height)` function, heigh
 Stairs
 ``````
 To create the stairs, you need to pass:
+
 * a minecraft connection
 * a position of the bottom of the stairs
 * the width of the stairs - how many blocks each leg is
@@ -229,6 +231,7 @@ To create the stairs, you need to pass:
 * a block type of what you want to stairs to be made from
 * a optional block data value 
 
+::
     #import Stairs from spacecraft.mcmodels
     from spacecraft.mcmodels import Stairs
     
