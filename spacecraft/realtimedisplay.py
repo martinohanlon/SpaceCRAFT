@@ -8,71 +8,80 @@ realtimedisplay.py
 
 Displays information from the Astro Pi board in real time in Minecraft
 """
-from mcpi.minecraft import Vec3
 from mcpi.minecraft import Minecraft
-from mcpi import block
-from mcmodels import ISS
-from mcmodels import MCAstroPi
-from mcsensors import DisplayTube
+from mcdisplays import ISSTowerMinecraftDisplay
 from astropithreaded import AstroPiThreaded
-from time import sleep
+from time import sleep, time
+from cputemp import CPUTemp
+import pygame
+from pygame.locals import *
 
-ROUNDINGFACTOR = 15
+def init_pygame():
+    pygame.init()
+    
+    pygame.display.set_mode((640, 480))
 
-def roundDeg(number):
-    return round((number / ROUNDINGFACTOR),0) * ROUNDINGFACTOR
+    pygame.event.set_allowed(KEYUP)
 
-ap = AstroPiThreaded()
-ap.set_imu_config(True, True, True)
+def get_joystick():
+    
+    up, down, left, right, button = 0, 0, 0, 0, 0
+    
+    for event in pygame.event.get():
+        if event.type == KEYDOWN:
+            if event.key == pygame.K_DOWN:
+                down = 1
+            elif event.key == pygame.K_UP:
+                up = 1
+            elif event.key == pygame.K_LEFT:
+                left = 1
+            elif event.key == pygame.K_RIGHT:
+                right = 1
+            elif event.key == pygame.K_RETURN:
+                 button = 1
+                
+    return {"up": up, "down": down, "left": left, "right": right, "button": button}
 
-mc = Minecraft.create()
-pos = mc.player.getTilePos()
-pos.y = mc.getHeight(pos.x, pos.z)
+if __name__ == "__main__":
 
-#mc.setBlocks(-30, 5, -30, 30, 50, 30, block.AIR.id)
+    mc.postToChat("SpaceCRAFT - Real time display")
+    
+    #create the astro pi object, my threaded one which keeps reading orientation data
+    ap = AstroPiThreaded()
+    ap.set_imu_config(True, True, True)
 
-issPos = pos.clone()
-issPos.z += 10
-issPos.y += 25
-iss = ISS(mc, issPos)
+    #initialise pygame
+    init_pygame()
 
-tempTubePos = pos.clone()
-tempTubePos.x -= 5
-tempTube = DisplayTube(mc, tempTubePos, 10,
-                       25, 40,
-                       block.LAVA.id)
+    #open the cpu temperature object
+    cpu_temp = CPUTemp()
+    cpu_temp.open()
 
-humidTubePos = pos.clone()
-humidTube = DisplayTube(mc, humidTubePos, 10,
-                        20, 45,
-                        block.WATER)
+    #create the connection to minecraft
+    mc = Minecraft.create()
 
-pressureTubePos = pos.clone()
-pressureTubePos.x += 5
-pressureTube = DisplayTube(mc, pressureTubePos, 10,
-                           950, 1050,
-                           block.OBSIDIAN)
+    #find the position of where to put the ISS tower display
+    pos = mc.player.getTilePos()
+    pos.z -= 10
+    pos.y = mc.getHeight(pos.x, pos.z)
 
-try:
-    lastYaw, lastPitch, lastRoll = 0, 0, 0
-    while(True):
-
-        orientation = ap.get_orientation_degrees()
-        yaw, pitch, roll = orientation["yaw"], orientation["pitch"], orientation["roll"]
-        yaw, pitch, roll = roundDeg(yaw), roundDeg(pitch), roundDeg(roll)
-        #print("yaw = {}; pitch = {}; roll = {}".format(yaw, pitch, roll))
-        #print("yaw = {}; pitch = {}; roll = {}".format(orientation["yaw"], orientation["pitch"], orientation["pitch"]))
-        if yaw != lastYaw or pitch != lastPitch or roll != lastRoll:
-            iss.rotate(yaw, pitch, roll * -1)
-        lastYaw, lastPitch, lastRoll = yaw, pitch, roll
-
-        tempTube.setValue(ap.get_temperature())
-        humidTube.setValue(ap.get_humidity())
-        pressureTube.setValue(ap.get_pressure())
-        sleep(0.1)
-
-finally:
-    iss.clear()
-    tempTube.clear()
-    humidTube.clear()
-    pressureTube.clear()
+    #create the iss tower display
+    isstowerdisplay = ISSTowerMinecraftDisplay(mc, pos)    
+    
+    try:
+        while True:
+            #keep updating the display based on new data
+            isstowerdisplay.update(
+                time(),
+                cpu_temp.get_temperature(),
+                ap.get_temperature(),
+                ap.get_humidity(),
+                ap.get_pressure(),
+                ap.get_orientation(),
+                get_joystick())
+            sleep(0.5)
+    finally:
+        #clear the display and stop everything
+        isstowerdisplay.clear()
+        cpu_temp.close()
+        ap.stop()

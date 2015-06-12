@@ -15,6 +15,10 @@ from mcpi.minecraft import Minecraft
 from mcpi.minecraft import Vec3
 from mcpi import block
 from time import sleep
+try:
+    import thread
+except ImportError:
+    import _thread as thread
 
 class ISS(MinecraftShape):
     """
@@ -201,9 +205,9 @@ class Rocket(MinecraftShape):
         self.setBlock(0, 0, 0, 35, 14)
         #block wool wings
         self.setBlocks(-2, 1, 0, 2, 1, 0, 35, 15)
-        self.setBlocks(0, 1, 2, 0, 1, -2, 35, 15)
+        self.setBlocks(0, 1, -2, 0, 1, 2, 35, 15)
         self.setBlocks(0, 2, -1, 0, 2, 1, 35, 15)
-        self.setBlocks(1, 2, 0, -1, 2, 0, 35, 15)
+        self.setBlocks(-1, 2, 0, 1, 2, 0, 35, 15)
         #white steps on wings
         self.setBlock(-3, 1, 0, 156)
         self.setBlock(-2, 2, 0, 156)
@@ -213,7 +217,7 @@ class Rocket(MinecraftShape):
         self.setBlock(2, 2, 0, 156, 1)
         self.setBlock(0, 1, 3, 156, 3)
         self.setBlock(0, 2, 2, 156, 3)
-        #white based
+        #white base
         self.setBlocks(1, 3, 0, -1, 3, 0, 155)
         self.setBlocks(0, 3, 1, 0, 3, -1, 155)
         #black band
@@ -232,7 +236,40 @@ class Rocket(MinecraftShape):
         #block on the top
         self.setBlock(0, 12, 0, 155)
 
-        #make the arrow visible
+        #make the rocket visible
+        self.draw()
+
+    def launch(self, height):
+        for up in range(0, height):
+            self.moveBy(0, 1, 0)
+
+class LaunchPad(MinecraftShape):
+    """
+    A model of a launch pad which the rocket can sit on
+    """
+    def __init__(self, mc, pos):
+
+        self.pos = pos
+        self.mc = mc
+
+        #init the MinecraftShape
+        MinecraftShape.__init__(self, self.mc, self.pos, visible = False)
+
+        #base
+        self.setBlocks(-4, 0, -3, 4, 0, 3, 1, tag = "launch")
+        self.setBlocks(3, 0, -4, -3, 0, -4, 1, tag = "launch")
+        self.setBlocks(-3, 0, 4, 3, 0, 4, 1, tag = "launch")
+
+        #steel tower
+        self.setBlocks(4, 1, 2, 4, 10, 2, 42)
+        self.setBlocks(4, 10, 2, 4, 10, -2, 42)
+        self.setBlocks(4, 1, -2, 4, 10, -2, 42)
+
+        #glass lift and tunnel
+        self.setBlocks(4, 9, 0, 4, 1, 0, 20)
+        self.setBlocks(3, 10, 0, 2, 10, 0, 20)
+
+        #make the launch pad visible
         self.draw()
 
 class Stairs():
@@ -243,6 +280,8 @@ class Stairs():
         self.height = height
         self.blockId = blockId
         self.blockData = blockData
+
+        self.draw()
 
     def _drawStairs(self, blockId, blockData = 0):
         x = self.pos.x
@@ -289,20 +328,28 @@ if __name__ == "__main__":
 
     mc = Minecraft.create()
 
-    #isspos = Vec3(0, 30, 0)
+    isspos = Vec3(0, 50, 0)
     #mcastropipos = Vec3(0, 20, 0)
-    stairspos = Vec3(0,0,0)
+    #stairspos = Vec3(0,0,0)
+    rocketpos = Vec3(0,20,0)
 
-    #iss = ISS(mc, isspos)
+    iss = ISS(mc, isspos)
+    launchpad = LaunchPad(mc, rocketpos)
+    rocket= Rocket(mc, rocketpos)
     #mcastropi = MCAstroPi(mc, mcastropipos)
-    stairs = Stairs(mc, stairspos, 5, 65, block.IRON_BLOCK.id)
-    stairs.draw()
+    #stairs = Stairs(mc, stairspos, 5, 65, block.IRON_BLOCK.id)
+    #stairs.draw()
     
     try:
-        sleep(20)
+        sleep(1)
+        rocket.launch(75)
+        rocket.reset()
+        sleep(5)
 
     finally:
-        #iss.clear()
+        iss.clear()
+        rocket.clear()
+        launchpad.clear()
         #mcastropi.clear()
-        stairs.clear()
+        #stairs.clear()
 

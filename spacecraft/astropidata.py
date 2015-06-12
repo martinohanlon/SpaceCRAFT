@@ -228,17 +228,19 @@ class AstroPiDataLogger():
         datarow[JOYSTICKRIGHT] = 0
         datarow[JOYSTICKLEFT] = 0
         datarow[JOYSTICKBUTTON] = 0
+        
         for event in pygame.event.get():
-            if event.key == pygame.K_DOWN:
-                datarow[JOYSTICKUP] = 1
-            elif event.key == pygame.K_UP:
-                datarow[JOYSTICKDOWN] = 1
-            elif event.key == pygame.K_LEFT:
-                datarow[JOYSTICKRIGHT] = 1
-            elif event.key == pygame.K_RIGHT:
-                datarow[JOYSTICKLEFT] = 1
-            elif event.key == pygame.K_RETURN:
-                datarow[JOYSTICKBUTTON] = 1
+            if event.type == KEYDOWN:
+                if event.key == pygame.K_DOWN:
+                    datarow[JOYSTICKDOWN] = 1
+                elif event.key == pygame.K_UP:
+                    datarow[JOYSTICKUP] = 1
+                elif event.key == pygame.K_LEFT:
+                    datarow[JOYSTICKLEFT] = 1
+                elif event.key == pygame.K_RIGHT:
+                    datarow[JOYSTICKRIGHT] = 1
+                elif event.key == pygame.K_RETURN:
+                    datarow[JOYSTICKBUTTON] = 1
 
         return datarow
 

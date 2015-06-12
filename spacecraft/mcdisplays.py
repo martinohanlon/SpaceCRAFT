@@ -1,6 +1,6 @@
 from mcpi.minecraft import Minecraft
 from mcpi import block
-from mcmodels import ISS, Stairs
+from mcmodels import ISS, Stairs, Rocket, LaunchPad
 from mcsensors import DisplayTube
 from time import sleep, time
 from mcclock import Clock
@@ -23,7 +23,7 @@ def roundDegrees(number):
 class ISSTowerMinecraftDisplay():
     """
     A minecraft display which is 3 towers showing sensor data leading up to
-    the ISS
+    the ISS, with a clock and rocket launch tower
     """
     def __init__(self, mc, pos):
 
@@ -55,9 +55,13 @@ class ISSTowerMinecraftDisplay():
         isspos.y += 40
 
         clockpos = pos.clone()
-        clockpos.x -= 14
+        clockpos.x -= 30
         clockpos.z -= 10
         clockpos.y += 11
+
+        rocketpos = pos.clone()
+        rocketpos.x += 15
+        rocketpos.z -= 10
 
         stairspos = pos.clone()
         stairspos.z -= 5
@@ -73,7 +77,7 @@ class ISSTowerMinecraftDisplay():
 
         self.humidityTube = DisplayTube(
             mc, humiditypos, 20,
-            20, 45,
+            20, 50,
             block.WATER)
 
         self.pressureTube = DisplayTube(
@@ -88,10 +92,13 @@ class ISSTowerMinecraftDisplay():
 
         #create the ISS
         self.iss = ISS(mc, isspos)
-
+        
         #create the stairs
-        self.stairs = Stairs(mc, stairspos, 6, 37, block.GLASS.id)
-        self.stairs.draw()
+        self.stairs = Stairs(mc, stairspos, 6, 38, block.DIAMOND_BLOCK.id)
+
+        #create the launch pad and rocket
+        self.launchpad = LaunchPad(mc, rocketpos)
+        self.rocket = Rocket(mc, rocketpos)
 
     def update(self, time, cpuTemperature, temperature, humidity, pressure, orientation, joystick):        
         #update the clock
@@ -110,6 +117,13 @@ class ISSTowerMinecraftDisplay():
             #if the iss was rotated, redraw the stairs as the ISS might have destroyed them
             self.stairs.draw()
 
+        #has the button been pressed?
+        if joystick["button"] == 1:
+            #launch the rocket and then redraw it and the launch pad
+            self.rocket.launch(75)
+            self.launchpad.redraw()
+            self.rocket.reset()
+                    
         #update the values
         self.time = time
         self.cpuTemperature = cpuTemperature
@@ -128,6 +142,8 @@ class ISSTowerMinecraftDisplay():
         self.iss.clear()
         self.clock.clear()
         self.stairs.clear()
+        self.rocket.clear()
+        self.launchpad.clear()
 
 #TODO
 class AbstractMinecraftDisplay():

@@ -75,14 +75,22 @@ Start Minecraft: Pi edition, select/create a new game::
 
     sudo python3 mcinteractiveastropi.py
 
+The AstroPi model will appear above the player, fly up and hit the model to interact with it.
 
 Documentation
 =============
 
-Data structure
---------------
+Astro Pi Data
+-------------
+The spacecraft.astropidata module contains 2 classes:
+* AstroPiDataLogger - writing data from the astro pi computer to a file
+* AstroPiDataReader - reading it back
 
-The data logger program creates a `CSV`_ file which contains the following fields seperated by a comma (,).
+AstroPiDataLogger
+`````````````````
+TData structure
+``````````````
+The AstroPiDataLogger creates a `CSV`_ file which contains the following fields seperated by a comma (,). This structure can be read by the AstroPiDataReader.
 
 ===================== =========================== ===============================================
 Python Constant       File Header                 Description
@@ -91,7 +99,7 @@ TIME                  time                        time expressed as number of se
 CPU_TEMP              cpu temperature             temperature of the raspberry pi cpu
 HUMIDITY              humidity                    humidity
 PRESSURE              pressure                    pressure
-TEMP_HUMIDITY         temperature (humidity)      temperature in C from the humidity sensor
+EMP_HUMIDITY         temperature (humidity)      temperature in C from the humidity sensor
 TEMP_PRESSURE         temperature (pressure)      temperature in C from the pressure sensor
 ORIENTATION_RAD_PITCH orientation radians pitch   pitch in radians
 ORIENTATION_RAD_YAW   orientation radians yaw     yaw in radians
@@ -117,6 +125,126 @@ JOYSTICKBUTTON        joystick button             1 if the joystick button was p
 
 The Python Constant is used in conjunction with the AstroPiLogger and AstroPiReader classes to reference fields.
 The File Header is output on the first row the CSV file.
+he data logger only contains one function, `start(filename, timetorun, interval)`, which expects the following parameters to be passed:
+* `filename` - the path and filename where the astro pi data is to be written
+* `timetorun` - the time in seconds that the data logger should run for
+* `interval` - how often in seconds the data logger should write to the file
+
+To read data from the astro pi every 1 second for 180 seconds to the file /home/pi/astropidata.csv you would use the following code
+
+    #import AstroPiDataLogger
+    from spacecraft.astropidata import AstroPiDataLogger
+    
+    #create the data logger
+    logger = AstroPiDataLogger()
+    
+    #start the data logger
+    logger.start("/home/pi/astropidata.csv", 180, 1)
+
+AstroPiDataLogger can be made to print verbose progress messages by passing True when it is created:
+
+    logger = AstroPiDataLogger(True)
+
+AstroPiDataReader
+`````````````````
+TODO
+
+
+Minecraft Models
+----------------
+
+SpaceCRAFT contains a number of minecraft models, in the `spacecraft.mcmodels` module, which you can include in your programs.
+
+The following minecraft models are included:
+* ISS - the international space station
+* MCAstroPi - a Raspberry Pi with Astro Pi Sense HAT attached
+* Rocket - a rocket similar to those drawn my children in the 80's
+* LaunchPad - a launchpad for the rocket to sit on
+* Arrow - a multicoloured arrow, really useful for showing the direction and orientation
+* Stairs - a helter skelter styled stair case leading up
+
+ISS, MCAstroPi, Rocket, LaunchPad, Arrow
+````````````````````````````````````````
+To create a model you need to pass a minecraft connection and a position of where you want the model:
+
+    #import ISS model from spacecraft.mcmodels
+    from spacecraft.mcmodels import ISS
+    
+    #import mcpi.minecraft module
+    from mcpi.minecraft import Minecraft
+    
+    #create connection to minecraft
+    mc = Minecraft.create()
+    
+    #get the players position, this will be where you create the model
+    pos = mc.player.getTilePos()
+    
+    #create the ISS
+    iss = ISS(mc, pos)
+
+These models are all based on (inherited from) the minecraftstuff.MinecraftShape class and supports the following:
+* `move(x, y, z)` - move the shape to a specific x, y, z
+* `moveBy(x, y, z)` - move the shape by that number of blocks in x, y, z
+* `rotate(yaw, pitch, roll)` - rotate the shape by a yaw, pitch and roll (in degrees)
+* `rotateBy(raw, pitch, roll)` - rotate the shape by that angle
+* `clear()` - clear the model
+* `draw()` - draws the model if it has been cleared
+* `redraw()` - redraws the model
+* `reset()` - resets the model back to its original position and rotation
+* `setBlock(x, y, z, blockId, blockData)` - sets a block within the model, the positions are relative not absolute
+* `setBlocks(x1, y1, z1, x2, y2, z2, blockId, blockData)` - creates a suboid of blocks in the model, again positions are relative
+* `getShapeBlock(x, y, z) -> minecraftstuff.ShapeBlock` - returns the block in the shape which is at that absolute position
+* `position -> mcpi.minecraft.Vec3(x, y, z)` - the position of the shape in Minecraft
+* `visible -> boolean` - whether the shape in visible
+
+Rocket
+``````
+The rocket model can also be launched using the `launch(height)` function, height is the number of blocks the rocket should fly upwards:
+
+    #import rocket model from spacecraft.mcmodels
+    from spacecraft.mcmodels import Rocket
+    
+    #import mcpi.minecraft module
+    from mcpi.minecraft import Minecraft
+    
+    #create connection to minecraft
+    mc = Minecraft.create()
+    
+    #get the players position, this will be where you create the model
+    pos = mc.player.getTilePos()
+    
+    #create the rocket
+    rocket = Rocket(mc, pos)
+
+    #launch the rocket 50 blocks up
+    rocket.launch(50)
+
+Stairs
+``````
+To create the stairs, you need to pass:
+* a minecraft connection
+* a position of the bottom of the stairs
+* the width of the stairs - how many blocks each leg is
+* the height - how many blocks the stairs should go up for
+* a block type of what you want to stairs to be made from
+* a optional block data value 
+
+    #import Stairs from spacecraft.mcmodels
+    from spacecraft.mcmodels import Stairs
+    
+    #import mcpi.minecraft and mcpi block modules
+    from mcpi.minecraft import Minecraft
+    from mcpi import block
+    
+    #create connection to minecraft
+    mc = Minecraft.create()
+    
+    #get the players position, this will be where the stairs will start
+    pos = mc.player.getTilePos()
+    
+    #create some stairs which have a width of 5 blocks, go up for 50 blocks and are made of STONE
+    stairs = Stairs(mc, pos, 5, 50, block.STONE.id)
+
 
 Contributors
 ============
