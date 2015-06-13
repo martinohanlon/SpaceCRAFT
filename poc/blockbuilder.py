@@ -1,3 +1,4 @@
+#utility to help making big builds, if you it 2 blocks, it fills the gap in between
 from mcpi.minecraft import Minecraft
 from mcpi import block
 

@@ -1,3 +1,4 @@
+#reading orientation data slowly to prove it goes out of sync
 from astro_pi import AstroPi
 from time import sleep
 

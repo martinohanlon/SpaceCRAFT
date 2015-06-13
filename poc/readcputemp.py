@@ -1,3 +1,4 @@
+#read cpu data in a loo and work out timings
 import os
 from time import time
 

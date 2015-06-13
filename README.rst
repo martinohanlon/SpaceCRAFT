@@ -88,6 +88,7 @@ The SpaceCRAFT project contains a Python module called spacecraft which you can 
 The module contains the following sub modules:
 * astropidata - used to write and read data from the astro pi computer
 * astropithreaded - a threaded version of the AstroPi module which is useful for reading data continuously from the Astro Pi computer
+* cputemp - used to read the temperature of the CPU
 * mcclock - a minecraft clock which can be used to show the date and time
 * mcmodels - minecraft models which can we be reused
 * mcsensors - builds in the minecraft which can be used to display values from the astro pi sensors
@@ -217,6 +218,15 @@ The File Header is output on the first row the CSV file.
 
 Astro Pi Threaded (astropithreaded)
 -----------------------------------
+TODO
+
+CPU Temperature (cputemp)
+-------------------------
+TODO
+
+Minecraft Clock (mcclock)
+-------------------------
+TODO
 
 Minecraft Models (mcmodels)
 ---------------------------
@@ -320,15 +330,12 @@ Minecraft Sensor Displays (mcsensors)
 -------------------------------------
 TODO
 
-Minecraft Clock (mcclock)
--------------------------
-TODO
 
 Contributors
 ============
 
-* `Martin O'Hanlon`_
 * Hannah Belshaw
+* `Martin O'Hanlon`_
 
 Open Source
 ===========

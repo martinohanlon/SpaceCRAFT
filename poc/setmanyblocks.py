@@ -1,3 +1,6 @@
+#code which sends many setBlock commands all in one go, to see if there was
+# a performance improvement.. It sent them a lot quicker, but you still had to wait
+# for minecraft to catch up
 import mcpi.minecraft as minecraft
 import mcpi.block as block
 import mcpi.util as util

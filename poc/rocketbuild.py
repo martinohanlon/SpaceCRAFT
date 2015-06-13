@@ -1,3 +1,4 @@
+#code o build a rocket
 from mcpi.minecraft import Minecraft
 mc = Minecraft.create()
 #mc.setBlocks(-20, -4, -20, 20, 20, 20, 0)

@@ -1,3 +1,4 @@
+#creating a 'progress bar' to show data was being collected
 from astro_pi import AstroPi
 from time import sleep
 

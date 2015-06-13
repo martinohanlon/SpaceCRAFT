@@ -1,3 +1,4 @@
+#create a flat area, useful for building models
 from mcpi.minecraft import Minecraft
 from mcpi import block
 

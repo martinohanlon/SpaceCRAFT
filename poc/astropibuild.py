@@ -1,3 +1,4 @@
+#code to build an astro pi board
 from mcpi.minecraft import Minecraft
 mc = Minecraft.create()
 mc.setBlocks(-15, -4, -15, 15, 10, 15, 0)

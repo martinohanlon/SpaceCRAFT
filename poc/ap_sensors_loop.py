@@ -1,3 +1,4 @@
+#reading sensor data in a loop
 from astro_pi import AstroPi
 from time import sleep
 

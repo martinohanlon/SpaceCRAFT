@@ -1,3 +1,5 @@
+#used to create the code for the big models
+# it outputs setBlock(s) commands when you hit blocks
 from mcpi.minecraft import Minecraft
 from mcpi.minecraft import Vec3
 from mcpi import block

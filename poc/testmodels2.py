@@ -1,3 +1,4 @@
+#testing models in MinecraftShapes and different ways of creating hthem
 from mcpi.minecraft import Minecraft
 from minecraftstuff import MinecraftShape, ShapeBlock
 from time import sleep

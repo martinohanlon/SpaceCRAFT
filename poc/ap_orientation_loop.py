@@ -1,3 +1,4 @@
+#reading orientation data in a loop, if you dont read it fast enough it goes out of sync
 from astro_pi import AstroPi
 from time import sleep
 
