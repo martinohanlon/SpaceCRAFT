@@ -81,11 +81,19 @@ Start Minecraft: Pi edition, select/create a new game::
 
 The AstroPi model will appear above the player, fly up and hit the model to interact with it.
 
-Documentation
-=============
+SpaceCRAFT Python Module
+========================
+The SpaceCRAFT project contains a Python module called spacecraft which you can use to create your own Astro Pi Minecraft projects.
 
-Astro Pi Data
--------------
+The module contains the following sub modules:
+* astropidata - used to write and read data from the astro pi computer
+* astropithreaded - a threaded version of the AstroPi module which is useful for reading data continuously from the Astro Pi computer
+* mcclock - a minecraft clock which can be used to show the date and time
+* mcmodels - minecraft models which can we be reused
+* mcsensors - builds in the minecraft which can be used to display values from the astro pi sensors
+
+Astro Pi Data (astropidata)
+---------------------------
 The spacecraft.astropidata module contains 2 classes:
 
 * AstroPiDataLogger - writing data from the astro pi computer to a file
@@ -207,8 +215,11 @@ JOYSTICKBUTTON        joystick button             1 if the joystick button was p
 The Python Constant is used internally within the AstroPiLogger and AstroPiReader classes to reference fields.
 The File Header is output on the first row the CSV file.
 
-Minecraft Models
-----------------
+Astro Pi Threaded (astropithreaded)
+-----------------------------------
+
+Minecraft Models (mcmodels)
+---------------------------
 
 SpaceCRAFT contains a number of minecraft models, in the spacecraft.mcmodels module, which you can include in your programs:
 
@@ -305,7 +316,11 @@ To create the stairs, you need to pass:
     #create some stairs which have a width of 5 blocks, go up for 50 blocks and are made of STONE
     stairs = Stairs(mc, pos, 5, 50, block.STONE.id)
 
-Minecraft Sensor Displays
+Minecraft Sensor Displays (mcsensors)
+-------------------------------------
+TODO
+
+Minecraft Clock (mcclock)
 -------------------------
 TODO
 
