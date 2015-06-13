@@ -98,7 +98,7 @@ TIME                  time                        time expressed as number of se
 CPU_TEMP              cpu temperature             temperature of the raspberry pi cpu
 HUMIDITY              humidity                    humidity
 PRESSURE              pressure                    pressure
-EMP_HUMIDITY          temperature (humidity)      temperature in C from the humidity sensor
+TEMP_HUMIDITY         temperature (humidity)      temperature in C from the humidity sensor
 TEMP_PRESSURE         temperature (pressure)      temperature in C from the pressure sensor
 ORIENTATION_RAD_PITCH orientation radians pitch   pitch in radians
 ORIENTATION_RAD_YAW   orientation radians yaw     yaw in radians
