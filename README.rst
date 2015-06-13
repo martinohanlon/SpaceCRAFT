@@ -1,12 +1,12 @@
-=========
+==========
 SpaceCRAFT
-=========
+==========
 
 IN PROGRESS!!!
 
-Todo. 
+SpaceCRAFT is a python module and collection of programs which displays data from the `Raspberry Pi`_ `Astro Pi`_ computer in `Minecraft Pi Edition`_.
 
-Conceived by Hannah Belshaw, from Cumnor House Girl’s School, created by Martin O'Hanlon, `Stuff about="code"`_.
+SpaceCRAFT was conceived by Hannah Belshaw, from Cumnor House Girl’s School, and was the `Primary School Winning Entry`_ in the `Astro Pi`_ competition, it was created by Martin O'Hanlon (`Stuff about=code`_) for the `Raspberry Pi`_ foundation.
 
 Installation
 ============
@@ -25,7 +25,6 @@ Usage
 
 Data logger
 -----------
-
 The spacecraft/astropidatalogger.py program reads data from the astro pi computer and writes it to a CSV files - it is run using::
 
     usage: astropidatalogger.py [-h] [-v] filename timetorun interval
@@ -41,14 +40,12 @@ The spacecraft/astropidatalogger.py program reads data from the astro pi compute
       -h, --help     show this help message and exit
       -v, --verbose  Output verbose debug statements
 
-
 e.g. to run the data logger for 180 seconds reading data every 1 second::
 
     sudo python3 astropidatalogger.py /home/pi/datafile.csv 180 1
 
 Data reader
 -----------
-
 The spacecraft/astropidatareader.py program reads CSV files created by the astropidatalogger.py program, its not invisage it is used to view data, but as a method for testing a file has been created successfully and as well as being an example of how to use the AstroPiDataReader::
 
     usage: astropidatareader.py [-h] [-v] filename
@@ -66,10 +63,17 @@ e.g. to read in the file /home/pi/datafile.csv::
 
     sudo python3 astropidatareader.py /home/pi/datafile.csv
 
+Minecraft Data Playback
+-----------------------
+TODO
+
+Minecraft Real-Time Data Display
+--------------------------------
+TODO
+
 Interactive Minecraft Astro Pi
 ------------------------------
-
-The spacecraft/mcinteractiveastropi.py creates a interactive astro pi in Minecraft which when hit (right clicked) with a sword it responds with a description and makes the interacts with the real astro pi.
+The spacecraft/mcinteractiveastropi.py program creates a interactive astro pi in Minecraft which when hit (right clicked) with a sword it responds with a description and makes the interacts with the real astro pi.
 
 Start Minecraft: Pi edition, select/create a new game::
 
@@ -87,9 +91,87 @@ The spacecraft.astropidata module contains 2 classes:
 * AstroPiDataLogger - writing data from the astro pi computer to a file
 * AstroPiDataReader - reading it back
 
-Data structure
-``````````````
-The AstroPiDataLogger creates a `CSV`_ file which contains the following fields seperated by a comma . This structure can be read by the AstroPiDataReader.
+AstroPiDataLogger
+`````````````````
+The AstroPiDataLogger::
+
+    AstroPiDataLogger(verbose = False)
+
+It is started by using the start() function and expects the following parameters to be passed:
+
+* filename - the path and filename where the astro pi data is to be written
+* timetorun - the time in seconds that the data logger should run for
+* interval - how often in seconds the data logger should write to the file
+
+To read data from the astro pi every 1 second for 180 seconds to the file /home/pi/astropidata.csv you would use the following code::
+
+    #import AstroPiDataLogger
+    from spacecraft.astropidata import AstroPiDataLogger
+    
+    #create the data logger
+    logger = AstroPiDataLogger()
+    
+    #start the data logger
+    logger.start("/home/pi/astropidata.csv", 180, 1)
+
+AstroPiDataLogger can be made to print verbose progress messages by passing True when it is created::
+
+    logger = AstroPiDataLogger(True)
+
+AstroPiDataReader
+`````````````````
+The AstroPiDataReader reads data files created by the AstroPiDataLogger::
+
+    AstroPiDataReader(filename, verbose = False)
+
+An open file error will be returned in the file cannot be opened. 
+
+When the file is open it can be iterated and read using the following functions:
+
+* rowcount -> integer - returns the number of rows in the file
+* next() -> bool - moves to the next row in the file, returns False if there are no more rows
+* previous() -> bool - moves to the previous row in the, returns False if at the start of the file
+* currentrow -> integer - returns a 0 based value for the current row
+* get_time() -> integer - returns the time the row was created, in seconds since the epoch
+* get_temperature() -> float - returns the temperature in C
+* get_temperature_from_humidity() -> float - returns the temperature in C from the humidity sensor
+* get_temperature_from_pressure() -> float - returns the temperature in C from the pressure sensor
+* get_pressure() -> float - returns the pressure
+* get_humidity() -> float - returns the humidity
+* get_orientation() -> dict - returns the orientation in degress as a dictionary of "pitch", "yaw", "roll"
+* get_orientation_in_degrees() -> dict - returns the orientation in degress as a dictionary of "pitch", "yaw", "roll"
+* get_orientation_in_radians() -> dict - returns the orientation in radians as a dictionary of "pitch", "yaw", "roll"
+* get_compass_raw() -> dict - returns the raw compass values as a dictionary of "x", "y", "z"
+* get_gyroscope_raw() -> dict - returns the raw gyroscope values as a dictionary of "x", "y", "z"
+* get_accelerometer_raw() -> dict - returns the raw accelerometer values as a dictionary of "x", "y", "z"
+* get_cpu_temperature() -> float - returns the temperature of the cpu
+* get_joystick() -> dict - returns whether the joystick was pressed (1 for pressed, 0 for not pressed) as dictionary of "up", "down", "left", "right", "button"
+
+To loop through each row in a data file and print it to the screen you would use the following code::
+
+    #import AstroPiDataReader
+    from spacecraft.astropidata import AstroPiDataReader
+    
+    #create the data reader
+    reader = AstroPiDataReader("/home/pi/astropidata.csv")
+
+    #are there any rows?
+    if reader.rowcount > 0:
+
+        #keep looping until its the end of file
+        found_row = True
+        while(found_row):
+
+            #get the time the row was created
+            timedata = reader.get_time()
+            print("Time = {}".format(timedata))
+    
+            #move to the next row
+            found_row = reader.next()
+
+Data file
+`````````
+AstroPiDataLogger creates a `CSV`_ file which contains the following fields seperated by a comma . This structure can be read by the AstroPiDataReader as well as text editors (such as Leafpad or Notepad) and spreadsheet applications (Excel, Sheet).
 
 ===================== =========================== ===============================================
 Python Constant       File Header                 Description
@@ -122,43 +204,13 @@ JOYSTICKLEFT          joystick left               1 if the joystick was pushed l
 JOYSTICKBUTTON        joystick button             1 if the joystick button was pushed else 0
 ===================== =========================== ===============================================
 
-The Python Constant is used in conjunction with the AstroPiLogger and AstroPiReader classes to reference fields.
+The Python Constant is used internally within the AstroPiLogger and AstroPiReader classes to reference fields.
 The File Header is output on the first row the CSV file.
-
-AstroPiDataLogger
-`````````````````
-The data logger only contains one function, start(filename, timetorun, interval), which expects the following parameters to be passed:
-
-* filename - the path and filename where the astro pi data is to be written
-* timetorun - the time in seconds that the data logger should run for
-* interval - how often in seconds the data logger should write to the file
-
-To read data from the astro pi every 1 second for 180 seconds to the file /home/pi/astropidata.csv you would use the following code::
-
-    #import AstroPiDataLogger
-    from spacecraft.astropidata import AstroPiDataLogger
-    
-    #create the data logger
-    logger = AstroPiDataLogger()
-    
-    #start the data logger
-    logger.start("/home/pi/astropidata.csv", 180, 1)
-
-AstroPiDataLogger can be made to print verbose progress messages by passing True when it is created::
-
-    logger = AstroPiDataLogger(True)
-
-AstroPiDataReader
-`````````````````
-TODO
-
 
 Minecraft Models
 ----------------
 
-SpaceCRAFT contains a number of minecraft models, in the spacecraft.mcmodels module, which you can include in your programs.
-
-The following minecraft models are included:
+SpaceCRAFT contains a number of minecraft models, in the spacecraft.mcmodels module, which you can include in your programs:
 
 * ISS - the international space station
 * MCAstroPi - a Raspberry Pi with Astro Pi Sense HAT attached
@@ -253,6 +305,9 @@ To create the stairs, you need to pass:
     #create some stairs which have a width of 5 blocks, go up for 50 blocks and are made of STONE
     stairs = Stairs(mc, pos, 5, 50, block.STONE.id)
 
+Minecraft Sensor Displays
+-------------------------
+TODO
 
 Contributors
 ============
@@ -273,5 +328,7 @@ Open Source
 .. _BSD Licence: http://opensource.org/licenses/BSD-3-Clause
 .. _GitHub: https://github.com/martinohanlon/SpaceCRAFT
 .. _GitHub Issues: https://github.com/martinohanlon/SpaceCRAFT/issues
-.. _Stuff about="code": http://www.stuffaboutcode.com
+.. _Stuff about=code: http://www.stuffaboutcode.com
 .. _CSV: http://en.wikipedia.org/wiki/Comma-separated_values
+.. _Minecraft Pi Edition: http://pi.minecraft.net
+.. _Primary School Winning Entry: http://www.ukspace.org/news-item/uk-primary-students-win-competition-to-send-experiments-into-space/
