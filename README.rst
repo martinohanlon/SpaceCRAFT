@@ -89,7 +89,7 @@ The spacecraft.astropidata module contains 2 classes:
 
 Data structure
 ``````````````
-The AstroPiDataLogger creates a `CSV`_ file which contains the following fields seperated by a comma (,). This structure can be read by the AstroPiDataReader.
+The AstroPiDataLogger creates a `CSV`_ file which contains the following fields seperated by a comma . This structure can be read by the AstroPiDataReader.
 
 ===================== =========================== ===============================================
 Python Constant       File Header                 Description
@@ -127,13 +127,13 @@ The File Header is output on the first row the CSV file.
 
 AstroPiDataLogger
 `````````````````
-The data logger only contains one function, `start(filename, timetorun, interval)`, which expects the following parameters to be passed:
+The data logger only contains one function, start(filename, timetorun, interval), which expects the following parameters to be passed:
 
-* `filename` - the path and filename where the astro pi data is to be written
-* `timetorun` - the time in seconds that the data logger should run for
-* `interval` - how often in seconds the data logger should write to the file
+* filename - the path and filename where the astro pi data is to be written
+* timetorun - the time in seconds that the data logger should run for
+* interval - how often in seconds the data logger should write to the file
 
-To read data from the astro pi every 1 second for 180 seconds to the file /home/pi/astropidata.csv you would use the following code ::
+To read data from the astro pi every 1 second for 180 seconds to the file /home/pi/astropidata.csv you would use the following code::
     #import AstroPiDataLogger
     from spacecraft.astropidata import AstroPiDataLogger
     
@@ -154,7 +154,7 @@ TODO
 Minecraft Models
 ----------------
 
-SpaceCRAFT contains a number of minecraft models, in the `spacecraft.mcmodels` module, which you can include in your programs.
+SpaceCRAFT contains a number of minecraft models, in the spacecraft.mcmodels module, which you can include in your programs.
 
 The following minecraft models are included:
 
@@ -185,23 +185,23 @@ To create a model you need to pass a minecraft connection and a position of wher
 
 These models are all based on (inherited from) the minecraftstuff.MinecraftShape class and supports the following:
 
-* `move(x, y, z)` - move the shape to a specific x, y, z
-* `moveBy(x, y, z)` - move the shape by that number of blocks in x, y, z
-* `rotate(yaw, pitch, roll)` - rotate the shape by a yaw, pitch and roll (in degrees)
-* `rotateBy(raw, pitch, roll)` - rotate the shape by that angle
-* `clear()` - clear the model
-* `draw()` - draws the model if it has been cleared
-* `redraw()` - redraws the model
-* `reset()` - resets the model back to its original position and rotation
-* `setBlock(x, y, z, blockId, blockData)` - sets a block within the model, the positions are relative not absolute
-* `setBlocks(x1, y1, z1, x2, y2, z2, blockId, blockData)` - creates a suboid of blocks in the model, again positions are relative
-* `getShapeBlock(x, y, z) -> minecraftstuff.ShapeBlock` - returns the block in the shape which is at that absolute position
-* `position -> mcpi.minecraft.Vec3(x, y, z)` - the position of the shape in Minecraft
-* `visible -> boolean` - whether the shape in visible
+* move(x, y, z) - move the shape to a specific x, y, z
+* moveBy(x, y, z) - move the shape by that number of blocks in x, y, z
+* rotate(yaw, pitch, roll) - rotate the shape by a yaw, pitch and roll (in degrees)
+* rotateBy(raw, pitch, roll) - rotate the shape by that angle
+* clear() - clear the model
+* draw() - draws the model if it has been cleared
+* redraw() - redraws the model
+* reset() - resets the model back to its original position and rotation
+* setBlock(x, y, z, blockId, blockData) - sets a block within the model, the positions are relative not absolute
+* setBlocks(x1, y1, z1, x2, y2, z2, blockId, blockData) - creates a suboid of blocks in the model, again positions are relative
+* getShapeBlock(x, y, z) -> minecraftstuff.ShapeBlock - returns the block in the shape which is at that absolute position
+* position -> mcpi.minecraft.Vec3(x, y, z) - the position of the shape in Minecraft
+* visible -> boolean - whether the shape in visible
 
 Rocket
 ``````
-The rocket model can also be launched using the `launch(height)` function, height is the number of blocks the rocket should fly upwards::
+The rocket model can also be launched using the launch(height) function, height is the number of blocks the rocket should fly upwards::
     #import rocket model from spacecraft.mcmodels
     from spacecraft.mcmodels import Rocket
     
