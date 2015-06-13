@@ -134,6 +134,7 @@ The data logger only contains one function, start(filename, timetorun, interval)
 * interval - how often in seconds the data logger should write to the file
 
 To read data from the astro pi every 1 second for 180 seconds to the file /home/pi/astropidata.csv you would use the following code::
+
     #import AstroPiDataLogger
     from spacecraft.astropidata import AstroPiDataLogger
     
@@ -144,6 +145,7 @@ To read data from the astro pi every 1 second for 180 seconds to the file /home/
     logger.start("/home/pi/astropidata.csv", 180, 1)
 
 AstroPiDataLogger can be made to print verbose progress messages by passing True when it is created::
+
     logger = AstroPiDataLogger(True)
 
 AstroPiDataReader
@@ -168,6 +170,7 @@ The following minecraft models are included:
 ISS, MCAstroPi, Rocket, LaunchPad, Arrow
 ````````````````````````````````````````
 To create a model you need to pass a minecraft connection and a position of where you want the model::
+
     #import ISS model from spacecraft.mcmodels
     from spacecraft.mcmodels import ISS
     
@@ -202,6 +205,7 @@ These models are all based on (inherited from) the minecraftstuff.MinecraftShape
 Rocket
 ``````
 The rocket model can also be launched using the launch(height) function, height is the number of blocks the rocket should fly upwards::
+
     #import rocket model from spacecraft.mcmodels
     from spacecraft.mcmodels import Rocket
     
@@ -232,6 +236,7 @@ To create the stairs, you need to pass:
 * a optional block data value 
 
 ::
+
     #import Stairs from spacecraft.mcmodels
     from spacecraft.mcmodels import Stairs
     
