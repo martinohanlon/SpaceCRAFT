@@ -259,7 +259,7 @@ To create a model you need to pass a minecraft connection and a position of wher
     #create the ISS
     iss = ISS(mc, pos)
 
-These models are all based on (inherited from) the minecraftstuff.MinecraftShape class and supports the following:
+These models are all based on (inherited from) the minecraftstuff.MinecraftShape class and support the following:
 
 * move(x, y, z) - move the shape to a specific x, y, z
 * moveBy(x, y, z) - move the shape by that number of blocks in x, y, z

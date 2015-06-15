@@ -14,8 +14,9 @@ blocks up the middle. Think Minecraft thermometer!
 from mcpi.minecraft import Minecraft
 from mcpi.minecraft import Vec3
 from mcpi import block
-from minecraftstuff import MinecraftShape
+from minecraftstuff import MinecraftShape, MinecraftDrawing
 from time import sleep
+from math import sin, cos, radians, sqrt
 
 class BarGraph():
     """
@@ -216,7 +217,146 @@ class DisplayTube():
                           block.AIR.id)
         self.mc.setBlock(self.pos.x, self.pos.y - 1, self.pos.z, block.AIR.id)
 
-#test
+
+class SpikeyCircle():
+    """
+    Draws lines out from the centre, the lenght determines the value, the longer the line the greater the value
+    """
+    ANGLEINCREMENT = 15
+    
+    def __init__(
+        self,
+        mc,
+        pos,
+        maxRadius,
+        minValue,
+        maxValue,
+        blocksToUse,
+        angleIncrement = ANGLEINCREMENT):
+
+        self.mc = mc
+        self.pos = pos
+        self.maxRadius = maxRadius
+        self.minValue = minValue
+        self.maxValue = maxValue
+        self.blocksToUse = blocksToUse
+        self.angleIncrement = angleIncrement
+        self.currentBlock = 0
+        self.angle = 0
+
+        #create a dictionary of the lines for the angles in the circle
+        # to keep track of the values
+        self.lines = {}
+        for angle in range(0, 360, self.angleIncrement):
+            self.lines[angle] = [pos.x, pos.y]
+
+        #create the minecraft drawing object which will be used to draw the lines
+        self.draw = MinecraftDrawing(mc)
+
+    def addValue(self, value):
+        """
+        Add a single value to the spikey circle
+    `   """
+        if value > self.maxValue: value = self.maxValue
+        if value < self.minValue: value = self.minValue
+
+        #clear the line
+        endX = self.lines[self.angle][0]
+        endY = self.lines[self.angle][1]
+        self.draw.drawLine(
+            self.pos.x, self.pos.y, self.pos.z,
+            endX, endY, self.pos.z,
+            block.AIR.id)
+
+        #draw the line
+        #calculate the length of the line
+        lineLen = self._calcLength(value)
+
+        #calculate the new end of the line
+        endX, endY = self._findPointOnCircle(
+            self.pos.x, self.pos.y,
+            self.angle, lineLen)
+        
+        self.draw.drawLine(
+            self.pos.x, self.pos.y, self.pos.z,
+            endX, endY, self.pos.z,
+            self.blocksToUse[self.currentBlock].id,
+            self.blocksToUse[self.currentBlock].data)
+
+        #save the line to the dictionary, so next time we can clear it
+        self.lines[self.angle] = [endX, endY]
+
+        #increment the angle
+        self._incrementAngle()
+
+        #increment the block
+        self._incrementBlock()
+
+    def _incrementBlock(self):
+        #increment the block
+        self.currentBlock += 1
+
+        #if its the end, go back to the start 
+        if self.currentBlock + 1 > len(self.blocksToUse):
+            self.currentBlock = 0
+
+    def _incrementAngle(self):
+        #increment the angle
+        self.angle += self.angleIncrement
+
+        #if its over 360 go back to the start 
+        if self.angle >= 360:
+            self.angle -= 360
+    
+    def _calcLength(self, value):
+        scale = self.maxValue - self.minValue
+        flatValue = value - self.minValue
+        return int(round((flatValue / scale) * self.maxRadius))
+
+    def _findPointOnCircle(self, cx, cy, angle, radius):
+        x = cx + sin(radians(angle)) * radius
+        y = cy + cos(radians(angle)) * radius
+        x = int(round(x, 0))
+        y = int(round(y, 0))
+        return(x,y)
+
+    def clear(self):
+        """
+        Clears the spikey circle
+    `   """
+        for angle in self.lines:
+            endX = self.lines[angle][0]
+            endY = self.lines[angle][1]
+            self.draw.drawLine(
+                self.pos.x, self.pos.y, self.pos.z,
+                endX, endY, self.pos.z,
+                block.AIR.id)
+
+        #reset
+        self.angle = 0
+        self.currentBlock = 0
+#test                
+if __name__ == "__main__":
+
+    mc = Minecraft.create()
+    pos = Vec3(0,100,0)
+    mc.player.setTilePos(5,100,5)
+    blocksToUse = []
+    for col in range(0,15):
+        blocksToUse.append(block.Block(block.WOOL.id, col))
+    circle = SpikeyCircle(mc, pos, 20, 0, 30, blocksToUse)
+    try:
+        sleep(1)
+        for count in range(10,30):
+            print(count)
+            circle.addValue(count)
+            sleep(0.5)
+        for count in range(10,0,-1):
+            circle.addValue(count)
+            sleep(0.5)
+    finally:
+        circle.clear()
+
 if __name__ == "__main__displaytube":
     mc = Minecraft.create()
     pos = Vec3(0,10,0)
@@ -233,7 +373,7 @@ if __name__ == "__main__displaytube":
     finally:
         tube.clear()
 
-if __name__ == "__main__":
+if __name__ == "__main__bargraph":
 
 
     mc = Minecraft.create()
