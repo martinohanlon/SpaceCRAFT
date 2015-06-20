@@ -20,12 +20,15 @@ class AstroPiThreaded(AstroPi):
     """
     A class which continually reads the Astro Pi's orientation otherwise it goes out of sync
     """
-    
-    def __init__(self,
-            fb_device='/dev/fb1',
-            imu_settings_file='RTIMULib',
-            text_assets='astro_pi_text'):
-                
+    def __init__(
+        self,
+        fb_device = '/dev/fb1',
+        imu_settings_file = 'RTIMULib',
+        text_assets = 'astro_pi_text',
+        sample_rate = 0.01):
+
+        self.sample_rate = sample_rate
+        
         AstroPi.__init__(self, fb_device, imu_settings_file, text_assets)
 
         self._orientation = AstroPi.get_orientation(self)
@@ -34,16 +37,36 @@ class AstroPiThreaded(AstroPi):
         thread.start_new_thread(self._get_orientation_threaded, ())
 
     def _get_orientation_threaded(self):
+        """
+        Internal. called in a thread to continuously read the astro pi data
+        """
         self.stopped = False
+        self.running = True
         while(not self.stopped):
             self._orientation = AstroPi.get_orientation(self)
-            sleep(0.01)
+            sleep(self.sample_rate)
+        self.running = False
     
     def get_orientation(self):
+        """
+        Returns the orientation data from the last time it was read by the thread
+        """
         return self._orientation
 
     def stop(self):
+        """
+        Stops the thread
+        """
         self.stopped = True
+        #wait for the thread to stop
+        while self.running:
+            sleep(0.01)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.stop() 
         
 #test
 if __name__ == "__main__":

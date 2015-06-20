@@ -6,7 +6,7 @@ IN PROGRESS!!!
 
 SpaceCRAFT is a python module and collection of programs which displays data from the `Raspberry Pi`_ `Astro Pi`_ computer in `Minecraft Pi Edition`_.
 
-SpaceCRAFT was conceived by Hannah Belshaw, from Cumnor House Girl’s School, and was the `Primary School Winning Entry`_ in the `Astro Pi`_ competition, it was created by Martin O'Hanlon (`Stuff about=code`_) for the `Raspberry Pi`_ foundation.
+SpaceCRAFT was conceived by Hannah Belshaw, from Cumnor House Girls School, and was the `Primary School Winning Entry`_ in the `Astro Pi`_ competition, it was created by Martin O'Hanlon (`Stuff about=code`_) for the `Raspberry Pi`_ foundation.
 
 Installation
 ============
@@ -17,7 +17,7 @@ Structure
 =========
 
 * spacecraft - the spacecraft python module and programs
-* poc - proof of concept code used in the development
+* poc - proof of concept code used in the development included for interest and prosperity
 * scripts - useful scripts!
 
 Usage
@@ -69,7 +69,9 @@ TODO
 
 Minecraft Real-Time Data Display
 --------------------------------
-TODO
+The spacecraft/realtimedisplay.py programs reads data from the Astro Pi Sense HAT in real time and displays the information into Minecraft using the towers, clock, ISS and rocket design conceived by Hannah::
+
+    sudo python3 realtimedisplay.py
 
 Interactive Minecraft Astro Pi
 ------------------------------
@@ -218,19 +220,65 @@ The File Header is output on the first row the CSV file.
 
 Astro Pi Threaded (astropithreaded)
 -----------------------------------
-TODO
+The astropithreaded module allows you to continuously read orientation data from the Astro Pi Sense HAT and it not go out of sync as in order to get accurate data from the IMU it should be called greater than the gyro sample rate. 
+
+The AstroPiThreaded class does this by creating a thread which reads data quicker than the sample rate and as it inherits form the AstroPi class it also supports all the same methods.
+
+As AstroPiThreaded spawns a seperate thread its important the stop() function is used when your program finishes.
+
+::
+
+    from spacecraft.astropithreaded import AstroPiThreaded
+    from time import sleep
+    ap = AstroPiThreaded()
+    try: 
+        while True:
+            print(ap.get_orientation())
+            sleep(1)
+    finally:
+        ap.stop()
 
 CPU Temperature (cputemp)
 -------------------------
-TODO
+To supplement the astropi data SpaceCRAFT also reads the CPU temperature using the the CPUTemp class in the cputemp module. Its a very quick way of reading the cpu temperature.
+
+::
+
+    #import the cputemp module
+    from cputemp import CPUTemp
+
+    #create the CPUTemp object and read the temperature in C & F
+    with CPUTemp() as cpu_temp:
+        print("{} C".format(cpu_temp.get_temperature()))
+        print("{} F".format(cpu_temp.get_temperature_in_f()))
 
 Minecraft Clock (mcclock)
 -------------------------
-TODO
+SpaceCRAFT includes a 'digital' clock to display the date and time, it is created by passing a minecraft connection (mc), position and block type to the Clock class. The methods setTime(time) and updateTime() can be used to set the time to any date and time, or update the time to the current date and time::
+
+    #import modules
+    from mcpi.minecraft import Minecraft
+    from mcpi import block
+    from mcclock import Clock
+    from time import time
+
+    #create connection to minecraft
+    mc = Minecraft.create()
+    #get the players position and add 12 to Y as the clock is 11 blocks high
+    pos = mc.player.getTilePos()
+    pos.y += 12
+
+    #create the clock
+    clock = Clock(mc, pos, block.WOOL.id, 2)
+    
+    #set the time to now (or any 'time')
+    clock.setTime(time())
+
+    #update the time
+    clock.updateTime()
 
 Minecraft Models (mcmodels)
 ---------------------------
-
 SpaceCRAFT contains a number of minecraft models, in the spacecraft.mcmodels module, which you can include in your programs:
 
 * ISS - the international space station
@@ -329,7 +377,6 @@ To create the stairs, you need to pass:
 Minecraft Sensor Displays (mcsensors)
 -------------------------------------
 TODO
-
 
 Contributors
 ============

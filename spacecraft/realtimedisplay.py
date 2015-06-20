@@ -43,6 +43,8 @@ def get_joystick():
     return {"up": up, "down": down, "left": left, "right": right, "button": button}
 
 if __name__ == "__main__":
+    #create the connection to minecraft
+    mc = Minecraft.create()
 
     mc.postToChat("SpaceCRAFT - Real time display")
     
@@ -56,9 +58,6 @@ if __name__ == "__main__":
     #open the cpu temperature object
     cpu_temp = CPUTemp()
     cpu_temp.open()
-
-    #create the connection to minecraft
-    mc = Minecraft.create()
 
     #find the position of where to put the ISS tower display
     pos = mc.player.getTilePos()

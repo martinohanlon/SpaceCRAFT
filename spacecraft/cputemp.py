@@ -1,3 +1,13 @@
+"""
+SpaceCRAFT - Astro Pi competition[http://astro-pi.org/] entry
+Conceived by Hannah Belshaw
+Created by Martin O'Hanlon[http://www.stuffaboutcode.com]
+For the Raspberry Pi Foundation[https://www.raspberrypi.org]
+
+cputemp.py
+
+Reads the cpu temperature
+"""
 class CPUTemp:
     def __init__(self, tempfilename = "/sys/class/thermal/thermal_zone0/temp"):
         self.tempfilename = tempfilename

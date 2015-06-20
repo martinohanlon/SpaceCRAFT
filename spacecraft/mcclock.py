@@ -208,6 +208,9 @@ class Clock():
             self.second = second
 
     def _drawNumber(self, topLeftPos, number):
+        """
+        Internal. Draws a number (i.e. 01) in Minecraft
+        """
         currentPos = topLeftPos.clone()
 
         for digit in number:
@@ -215,6 +218,9 @@ class Clock():
             currentPos.x += DIGITWIDTH + 1
             
     def _drawDigit(self, topLeftPos, digit):
+        """
+        Internal. Draws a single digit (i.e. 1) in minecraft in the format:
+        """
         currentPos = topLeftPos.clone()
         
         #is digit in my list?
@@ -236,6 +242,9 @@ class Clock():
                     currentPos.x = topLeftPos.x
 
     def _splitTime(self, thetime):
+        """
+        Internal. Splits a time into its component bits (year, month, day, etc)
+        """
         #split the time into its bits
         timebits = gmtime(thetime)
         year = timebits.tm_year

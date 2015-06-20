@@ -14,6 +14,7 @@ blocks up the middle. Think Minecraft thermometer!
 from mcpi.minecraft import Minecraft
 from mcpi.minecraft import Vec3
 from mcpi import block
+from mcpi.block import Block
 from minecraftstuff import MinecraftShape, MinecraftDrawing
 from time import sleep
 from math import sin, cos, radians, sqrt
@@ -30,8 +31,7 @@ class BarGraph():
         maxLength,
         minValue,
         maxValue,
-        blockId,
-        blockData = 0,
+        blocksToUse = None,
         xIncrement = 1,
         zIncrement = 0):
 
@@ -42,10 +42,13 @@ class BarGraph():
         self.maxLength = maxLength
         self.minValue = minValue
         self.maxValue = maxValue
-        self.blockId = blockId
-        self.blockData = blockData
+        if blocksToUse == None:
+            self.blocksToUse = [Block(block.STONE.id, 0), Block(block.COBBLESTONE.id, 0)]
+        else:
+            self.blocksToUse = blocksToUse
         self.xIncrement = xIncrement
         self.zIncrement = zIncrement
+        self.currentBlock = 0
 
         #set the position of the next bar in the graph
         self.barPos = pos.clone()
@@ -66,7 +69,7 @@ class BarGraph():
         self.mc.setBlocks(
             self.barPos.x, self.barPos.y, self.barPos.z,
             self.barPos.x, self.barPos.y + numOfBlocksUp, self.barPos.z,
-            self.blockId, self.blockData)
+            self.blocksToUse[self.currentBlock].id, self.blocksToUse[self.currentBlock].data)
 
         #do the top of the bar graph
         self.mc.setBlocks(
@@ -74,6 +77,13 @@ class BarGraph():
             self.barPos.x, self.barPos.y + self.height, self.barPos.z,
             block.AIR.id)
         
+        #increment the graph pos
+        self._incrementGraphPos()
+
+        #increment the block type
+        self._incrementBlock()
+
+    def _incrementGraphPos(self):
         #increment the length and reset if its over the maximum
         self.graphLength += 1
         if self.graphLength == self.maxLength:
@@ -83,6 +93,14 @@ class BarGraph():
             #move the bar on
             self.barPos.x += self.xIncrement
             self.barPos.z += self.zIncrement
+
+    def _incrementBlock(self):
+        #increment the block
+        self.currentBlock += 1
+
+        #if its the end, go back to the start 
+        if self.currentBlock + 1 > len(self.blocksToUse):
+            self.currentBlock = 0
 
     def clear(self):
         """
@@ -231,7 +249,7 @@ class SpikeyCircle():
         maxRadius,
         minValue,
         maxValue,
-        blocksToUse,
+        blocksToUse = None,
         angleIncrement = ANGLEINCREMENT):
 
         self.mc = mc
@@ -239,16 +257,17 @@ class SpikeyCircle():
         self.maxRadius = maxRadius
         self.minValue = minValue
         self.maxValue = maxValue
-        self.blocksToUse = blocksToUse
+        if blocksToUse == None:
+            self.blocksToUse = [Block(block.STONE.id, 0), Block(block.COBBLESTONE.id, 0)]
+        else:
+            self.blocksToUse = blocksToUse
         self.angleIncrement = angleIncrement
         self.currentBlock = 0
         self.angle = 0
 
         #create a dictionary of the lines for the angles in the circle
-        # to keep track of the values
+        # to keep track of the values so they can be cleared
         self.lines = {}
-        for angle in range(0, 360, self.angleIncrement):
-            self.lines[angle] = [pos.x, pos.y]
 
         #create the minecraft drawing object which will be used to draw the lines
         self.draw = MinecraftDrawing(mc)
@@ -260,15 +279,16 @@ class SpikeyCircle():
         if value > self.maxValue: value = self.maxValue
         if value < self.minValue: value = self.minValue
 
-        #clear the line
-        endX = self.lines[self.angle][0]
-        endY = self.lines[self.angle][1]
-        self.draw.drawLine(
-            self.pos.x, self.pos.y, self.pos.z,
-            endX, endY, self.pos.z,
-            block.AIR.id)
+        #has a line already been drawn at this angle
+        if self.angle in self.lines:        
+            #clear the line
+            endX = self.lines[self.angle][0]
+            endY = self.lines[self.angle][1]
+            self.draw.drawLine(
+                self.pos.x, self.pos.y, self.pos.z,
+                endX, endY, self.pos.z,
+                block.AIR.id)
 
-        #draw the line
         #calculate the length of the line
         lineLen = self._calcLength(value)
 
@@ -277,6 +297,7 @@ class SpikeyCircle():
             self.pos.x, self.pos.y,
             self.angle, lineLen)
         
+        #draw the line
         self.draw.drawLine(
             self.pos.x, self.pos.y, self.pos.z,
             endX, endY, self.pos.z,
@@ -336,14 +357,14 @@ class SpikeyCircle():
         self.angle = 0
         self.currentBlock = 0
 #test                
-if __name__ == "__main__":
+if __name__ == "__main__spikeycircle":
 
     mc = Minecraft.create()
     pos = Vec3(0,100,0)
     mc.player.setTilePos(5,100,5)
     blocksToUse = []
     for col in range(0,15):
-        blocksToUse.append(block.Block(block.WOOL.id, col))
+        blocksToUse.append(Block(block.WOOL.id, col))
     circle = SpikeyCircle(mc, pos, 20, 0, 30, blocksToUse)
     try:
         sleep(1)
@@ -359,8 +380,8 @@ if __name__ == "__main__":
 
 if __name__ == "__main__displaytube":
     mc = Minecraft.create()
-    pos = Vec3(0,10,0)
-    tube = DisplayTube(mc, pos, 10, 0, 10, 0, block.LAVA.id)
+    pos = mc.player.getTilePos()
+    tube = DisplayTube(mc, pos, 10, 0, 10, block.LAVA.id)
     try:
         sleep(5)
         for count in range(0,11):
@@ -373,16 +394,19 @@ if __name__ == "__main__displaytube":
     finally:
         tube.clear()
 
-if __name__ == "__main__bargraph":
-
+if __name__ == "__main__":
 
     mc = Minecraft.create()
-    pos = Vec3(0,0,0)
-    mc.player.setTilePos(0,10,0)
-    tube = BarGraph(mc, pos, 20, 20, 0, 20, block.STONE.id)
+    pos = mc.player.getTilePos()
+    
+    blocksToUse = []
+    for col in range(0,15):
+        blocksToUse.append(Block(block.WOOL.id, col))
+        
+    tube = BarGraph(mc, pos, 20, 30, 0, 40, blocksToUse)
     try:
         sleep(1)
-        for count in range(0,20):
+        for count in range(0,40):
             print(count)
             tube.addValue(count)
             sleep(0.2)
