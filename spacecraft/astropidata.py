@@ -25,6 +25,7 @@ import pygame
 from pygame.locals import *
 
 #field name constants
+DATETIME = "datetime"
 TIME = "time"
 CPU_TEMP = "cpu temperature"
 HUMIDITY = "humidity"
@@ -57,7 +58,8 @@ class AstroPiDataLogger():
     A data logger for the astro pi board
     """
     #order of fieldnames for csv output file
-    FIELDNAMES = [TIME,
+    FIELDNAMES = [DATETIME,
+                  TIME,
                   CPU_TEMP,
                   HUMIDITY,
                   PRESSURE,
@@ -188,7 +190,10 @@ class AstroPiDataLogger():
         """
 
         datarow = {}
-        datarow[TIME] = datetime.now()
+
+        datarow[DATETIME] = datetime.now()
+        
+        datarow[TIME] = time()
 
         datarow[CPU_TEMP] = cpu_temp.get_temperature()
         
@@ -301,58 +306,61 @@ class AstroPiDataReader():
     def data(self):
         return self.datalist[self.currentrow]
 
+    def get_datetime(self):
+        return self.data[DATETIME]
+
     def get_time(self):
-        return self.data[TIME]
+        return float(self.data[TIME])
     
     def get_temperature(self):
         return self.get_temperature_from_humidity()
 
     def get_temperature_from_humidity(self):
-        return self.data[TEMP_HUMIDITY]
+        return float(self.data[TEMP_HUMIDITY])
 
     def get_temperature_from_pressure(self):
-        return self.data[TEMP_PRESSURE]
+        return float(self.data[TEMP_PRESSURE])
     
     def get_pressure(self):
-        return self.data[PRESSURE]
+        return float(self.data[PRESSURE])
 
     def get_humidity(self):
-        return self.data[HUMIDIY]
+        return float(self.data[HUMIDITY])
     
     def get_orientation_in_degrees(self):
-        return {"pitch": self.data[ORIENTATION_DEG_PITCH],
-                "yaw": self.data[ORIENTATION_DEG_YAW],
-                "roll": self.data[ORIENTATION_DEG_ROLL]}
+        return {"pitch": float(self.data[ORIENTATION_DEG_PITCH]),
+                "yaw": float(self.data[ORIENTATION_DEG_YAW]),
+                "roll": float(self.data[ORIENTATION_DEG_ROLL])}
 
     def get_orientation_in_radians(self):
-        return {"pitch": self.data[ORIENTATION_RAD_PITCH],
-                "yaw": self.data[ORIENTATION_RAD_YAW],
-                "roll": self.data[ORIENTATION_RAD_ROLL]}
+        return {"pitch": float(self.data[ORIENTATION_RAD_PITCH]),
+                "yaw": float(self.data[ORIENTATION_RAD_YAW]),
+                "roll": float(self.data[ORIENTATION_RAD_ROLL])}
 
     def get_orientation(self):
         return self.get_orientation_in_degrees()
 
     def get_compass_raw(self):
-        return {"x": self.data[COMPASS_RAW_X],
-                "y": self.data[COMPASS_RAW_Y],
-                "z": self.data[COMPASS_RAW_Z]}
+        return {"x": float(self.data[COMPASS_RAW_X]),
+                "y": float(self.data[COMPASS_RAW_Y]),
+                "z": float(self.data[COMPASS_RAW_Z])}
 
     def get_gyroscope_raw(self):
-        return {"x": self.data[GYRO_RAW_X],
-                "y": self.data[GYRO_RAW_Y],
-                "z": self.data[GYRO_RAW_Z]}
+        return {"x": float(self.data[GYRO_RAW_X]),
+                "y": float(self.data[GYRO_RAW_Y]),
+                "z": float(self.data[GYRO_RAW_Z])}
 
     def get_accelerometer_raw(self):
-        return {"x": self.data[ACCEL_RAW_X],
-                "y": self.data[ACCEL_RAW_Y],
-                "z": self.data[ACCEL_RAW_Z]}
+        return {"x": float(self.data[ACCEL_RAW_X]),
+                "y": float(self.data[ACCEL_RAW_Y]),
+                "z": float(self.data[ACCEL_RAW_Z])}
 
     def get_cpu_temperature(self):
-        return self.data[CPU_TEMP]
+        return float(self.data[CPU_TEMP])
 
     def get_joystick(self):
-        return {"up": self.data[JOYSTICKUP],
-                "down": self.data[JOYSTICKDOWN],
-                "left": self.data[JOYSTICKLEFT],
-                "right": self.data[JOYSTICKRIGHT],
-                "button": self.data[JOYSTICKBUTTON]}
+        return {"up": int(self.data[JOYSTICKUP]),
+                "down": int(self.data[JOYSTICKDOWN]),
+                "left": int(self.data[JOYSTICKLEFT]),
+                "right": int(self.data[JOYSTICKRIGHT]),
+                "button": int(self.data[JOYSTICKBUTTON])}

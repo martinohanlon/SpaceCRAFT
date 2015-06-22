@@ -24,7 +24,7 @@ class ISS(MinecraftShape):
     """
     A movable minecraft model of the ISS
     """
-    def __init__(self, mc, pos):
+    def __init__(self, mc, pos, cleararea = True, makevisible = True):
 
         self.pos = pos
         self.mc = mc
@@ -100,14 +100,31 @@ class ISS(MinecraftShape):
         self.setBlocks(4, 0, 13, 15, 0, 13, 35, 1)
         self.setBlocks(15, 0, 15, 4, 0, 15, 35, 1)
 
-        #make the iss visible
-        self.draw()
+        if cleararea:
+            self.clearArea()
 
+        #make the model visible
+        if makevisible:
+            self.draw()
+
+    def clearArea(self):
+        """
+        Clears an area big enough to put the model in
+        """
+        self.mc.setBlocks(
+            self.pos.x - 17,
+            self.pos.y - 3,
+            self.pos.z - 17,
+            self.pos.x + 17,
+            self.pos.y + 3,
+            self.pos.z + 17,
+            block.AIR.id)
+            
 class Arrow(MinecraftShape):
     """
     A movable arrow minecraft model
     """
-    def __init__(self, mc, pos):
+    def __init__(self, mc, pos, cleararea = True, makevisible = True):
 
         self.pos = pos
         self.mc = mc
@@ -125,14 +142,31 @@ class Arrow(MinecraftShape):
         self.setBlocks(3, 0, -2, 3, 0, -2, block.WOOL.id, 4)
         self.setBlocks(-3, 0, -2, -3, 0, -2, block.WOOL.id, 4)
         
-        #make the arrow visible
-        self.draw()
+        if cleararea:
+            self.clearArea()
+
+        #make the model visible
+        if makevisible:
+            self.draw()
+
+    def clearArea(self):
+        """
+        Clears an area big enough to put the model in
+        """
+        self.mc.setBlocks(
+            self.pos.x - 3,
+            self.pos.y,
+            self.pos.z - 5,
+            self.pos.x + 3,
+            self.pos.y,
+            self.pos.z + 5,
+            block.AIR.id)
 
 class MCAstroPi(MinecraftShape):
     """
     A movable model of the astro pi computer
     """
-    def __init__(self, mc, pos):
+    def __init__(self, mc, pos, cleararea = True, makevisible = True):
 
         self.pos = pos
         self.mc = mc
@@ -185,14 +219,31 @@ class MCAstroPi(MinecraftShape):
         self.setBlocks(-1, 0, -9, 2, 0, -9, 0)
         self.setBlocks(-5, 0, 1, -2, 0, 1, 0)
         
-        #make the astro pi visible
-        self.draw()
+        if cleararea:
+            self.clearArea()
 
+        #make the model visible
+        if makevisible:
+            self.draw()
+
+    def clearArea(self):
+        """
+        Clears an area big enough to put the model in
+        """
+        self.mc.setBlocks(
+            self.pos.x - 6,
+            self.pos.y - 3,
+            self.pos.z - 9,
+            self.pos.x + 7,
+            self.pos.y + 2,
+            self.pos.z + 11,
+            block.AIR.id)
+            
 class Rocket(MinecraftShape):
     """
     A movable model of a rocket in minecraft
     """
-    def __init__(self, mc, pos):
+    def __init__(self, mc, pos, cleararea = True, makevisible = True):
 
         self.pos = pos
         self.mc = mc
@@ -236,8 +287,25 @@ class Rocket(MinecraftShape):
         #block on the top
         self.setBlock(0, 12, 0, 155)
 
-        #make the rocket visible
-        self.draw()
+        if cleararea:
+            self.clearArea()
+
+        #make the model visible
+        if makevisible:
+            self.draw()
+
+    def clearArea(self):
+        """
+        Clears an area big enough to put the model in
+        """
+        self.mc.setBlocks(
+            self.pos.x - 3,
+            self.pos.y,
+            self.pos.z - 3,
+            self.pos.x + 3,
+            self.pos.y + 12,
+            self.pos.z + 3,
+            block.AIR.id)
 
     def launch(self, height):
         for up in range(0, height):
@@ -247,7 +315,7 @@ class LaunchPad(MinecraftShape):
     """
     A model of a launch pad which the rocket can sit on
     """
-    def __init__(self, mc, pos):
+    def __init__(self, mc, pos, cleararea = True, makevisible = True):
 
         self.pos = pos
         self.mc = mc
@@ -269,8 +337,25 @@ class LaunchPad(MinecraftShape):
         self.setBlocks(4, 9, 0, 4, 1, 0, 20)
         self.setBlocks(3, 10, 0, 2, 10, 0, 20)
 
-        #make the launch pad visible
-        self.draw()
+        if cleararea:
+            self.clearArea()
+
+        #make the model visible
+        if makevisible:
+            self.draw()
+
+    def clearArea(self):
+        """
+        Clears an area big enough to put the model in
+        """
+        self.mc.setBlocks(
+            self.pos.x - 4,
+            self.pos.y,
+            self.pos.z - 4,
+            self.pos.x + 4,
+            self.pos.y + 10,
+            self.pos.z + 4,
+            block.AIR.id)
 
 class Stairs():
     def __init__(self, mc, pos, width, height, blockId, blockData = 0):
@@ -328,28 +413,31 @@ if __name__ == "__main__":
 
     mc = Minecraft.create()
 
-    isspos = Vec3(0, 50, 0)
-    #mcastropipos = Vec3(0, 20, 0)
+    #isspos = Vec3(10, 70, 0)
+    #mcastropipos = Vec3(0, 60, 0)
+    #arrowpos = Vec3(0, 65, 0)
     #stairspos = Vec3(0,0,0)
-    rocketpos = Vec3(0,20,0)
+    rocketpos = Vec3(10,60,0)
 
-    iss = ISS(mc, isspos)
+    #iss = ISS(mc, isspos)
     launchpad = LaunchPad(mc, rocketpos)
-    rocket= Rocket(mc, rocketpos)
+    #rocket= Rocket(mc, rocketpos)
     #mcastropi = MCAstroPi(mc, mcastropipos)
+    #arrow = Arrow(mc, arrowpos)
     #stairs = Stairs(mc, stairspos, 5, 65, block.IRON_BLOCK.id)
     #stairs.draw()
     
     try:
-        sleep(1)
-        rocket.launch(75)
-        rocket.reset()
+        #sleep(1)
+        #rocket.launch(75)
+        #rocket.reset()
         sleep(5)
 
     finally:
-        iss.clear()
-        rocket.clear()
+        #iss.clear()
+        #rocket.clear()
         launchpad.clear()
         #mcastropi.clear()
+        #arrow.clear()
         #stairs.clear()
 

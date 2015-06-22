@@ -175,8 +175,9 @@ class Clock():
 
     def _drawClock(self):
         """
-        Internal. Draws the clock, i.e. the colons and dots
+        Internal. Draws the clock, i.e. the colons and dots and clears an area
         """
+        self.clear()
         self._drawDigit(self.slash1pos, ".")
         self._drawDigit(self.slash2pos, ".")
         self._drawDigit(self.colon1pos, ":")
@@ -257,11 +258,11 @@ class Clock():
     
     def clear(self):
         """
-        Clears the block
+        Clears the clock
         """
         self.mc.setBlocks(
-            self.pos.x, self.pos.y, self.pos.x,
-            self.pos.x + (DIGITWIDTH * 8) + 3, self.pos.y - (DIGITHEIGHT * 2) - 1, self.pos.z,
+            self.pos.x, self.pos.y, self.pos.z - 1,
+            self.pos.x + (DIGITWIDTH * 8) + 3, self.pos.y - (DIGITHEIGHT * 2) - 1, self.pos.z + 1,
             block.AIR.id)
 
 #test

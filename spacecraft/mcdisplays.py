@@ -22,6 +22,8 @@ def roundDegrees(number):
 
 class ISSTowerMinecraftDisplay():
     """
+    Hannah's vision of how we would display the data in Minecraft
+    
     A minecraft display which is 3 towers showing sensor data leading up to
     the ISS, with a clock and rocket launch tower
     """
@@ -68,6 +70,16 @@ class ISSTowerMinecraftDisplay():
 
         #create the clock
         self.clock = Clock(mc, clockpos, block.WOOL.id, 11)
+
+        #clear an area for the tubes
+        self.mc.setBlocks(
+            self.pos.x - 3,
+            self.pos.y,
+            self.pos.z - 3,
+            self.pos.x + 3,
+            self.pos.y + 20,
+            self.pos.z + 3,
+            block.AIR.id)
         
         #create the tubes
         self.tempTube = DisplayTube(
@@ -98,7 +110,7 @@ class ISSTowerMinecraftDisplay():
 
         #create the launch pad and rocket
         self.launchpad = LaunchPad(mc, rocketpos)
-        self.rocket = Rocket(mc, rocketpos)
+        self.rocket = Rocket(mc, rocketpos, cleararea = False)
 
     def update(self, time, cpuTemperature, temperature, humidity, pressure, orientation, joystick):        
         #update the clock
@@ -117,8 +129,8 @@ class ISSTowerMinecraftDisplay():
             #if the iss was rotated, redraw the stairs as the ISS might have destroyed them
             self.stairs.draw()
 
-        #has the button been pressed?
-        if joystick["button"] == 1:
+        #has the joystick been pressed?
+        if joystick["button"] == 1 or joystick["left"] == 1 or joystick["right"] == 1 or joystick["up"] == 1 or joystick["down"] == 1:
             #launch the rocket and then redraw it and the launch pad
             self.rocket.launch(75)
             self.launchpad.redraw()
@@ -146,9 +158,9 @@ class ISSTowerMinecraftDisplay():
         self.launchpad.clear()
 
 #TODO
-class AbstractMinecraftDisplay():
+class MartsMinecraftDisplay():
     """
-    An abstract display of the ISS data in Minecraft
+    An display of the ISS data in Minecraft by Martin O'Hanlon
     """
     def __init__(self, mc, pos):
         pass

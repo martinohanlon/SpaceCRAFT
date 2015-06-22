@@ -43,9 +43,10 @@ class BarGraph():
         self.minValue = minValue
         self.maxValue = maxValue
         if blocksToUse == None:
-            self.blocksToUse = [Block(block.STONE.id, 0), Block(block.COBBLESTONE.id, 0)]
-        else:
-            self.blocksToUse = blocksToUse
+            blocksToUse = []
+            for col in range(0,15):
+                blocksToUse.append(Block(block.WOOL.id, col))
+        self.blocksToUse = blocksToUse
         self.xIncrement = xIncrement
         self.zIncrement = zIncrement
         self.currentBlock = 0
@@ -257,10 +258,14 @@ class SpikeyCircle():
         self.maxRadius = maxRadius
         self.minValue = minValue
         self.maxValue = maxValue
+
+        #if no blocks to use have been passed, set them to the wool colours
         if blocksToUse == None:
-            self.blocksToUse = [Block(block.STONE.id, 0), Block(block.COBBLESTONE.id, 0)]
-        else:
-            self.blocksToUse = blocksToUse
+            blocksToUse = []
+            for col in range(0,15):
+                blocksToUse.append(Block(block.WOOL.id, col))
+                
+        self.blocksToUse = blocksToUse
         self.angleIncrement = angleIncrement
         self.currentBlock = 0
         self.angle = 0
@@ -357,15 +362,12 @@ class SpikeyCircle():
         self.angle = 0
         self.currentBlock = 0
 #test                
-if __name__ == "__main__spikeycircle":
+if __name__ == "__main__":
 
     mc = Minecraft.create()
     pos = Vec3(0,100,0)
     mc.player.setTilePos(5,100,5)
-    blocksToUse = []
-    for col in range(0,15):
-        blocksToUse.append(Block(block.WOOL.id, col))
-    circle = SpikeyCircle(mc, pos, 20, 0, 30, blocksToUse)
+    circle = SpikeyCircle(mc, pos, 20, 0, 30)
     try:
         sleep(1)
         for count in range(10,30):
@@ -394,16 +396,12 @@ if __name__ == "__main__displaytube":
     finally:
         tube.clear()
 
-if __name__ == "__main__":
+if __name__ == "__main__bargraph":
 
     mc = Minecraft.create()
     pos = mc.player.getTilePos()
     
-    blocksToUse = []
-    for col in range(0,15):
-        blocksToUse.append(Block(block.WOOL.id, col))
-        
-    tube = BarGraph(mc, pos, 20, 30, 0, 40, blocksToUse)
+    tube = BarGraph(mc, pos, 20, 30, 0, 40)
     try:
         sleep(1)
         for count in range(0,40):

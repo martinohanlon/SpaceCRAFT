@@ -4,7 +4,7 @@ Conceived by Hannah Belshaw
 Created by Martin O'Hanlon[http://www.stuffaboutcode.com]
 For the Raspberry Pi Foundation[https://www.raspberrypi.org]
 
-realtimedisplay.py
+mcastrorealtime.py
 
 Displays information from the Astro Pi board in real time in Minecraft
 """
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     pos.y = mc.getHeight(pos.x, pos.z)
 
     #create the iss tower display
-    isstowerdisplay = ISSTowerMinecraftDisplay(mc, pos)    
+    isstowerdisplay = ISSTowerMinecraftDisplay(mc, pos)
     
     try:
         while True:

@@ -71,7 +71,7 @@ Minecraft Real-Time Data Display
 --------------------------------
 The spacecraft/realtimedisplay.py programs reads data from the Astro Pi Sense HAT in real time and displays the information into Minecraft using the towers, clock, ISS and rocket design conceived by Hannah::
 
-    sudo python3 realtimedisplay.py
+    sudo python3 mcastrorealtime.py
 
 Interactive Minecraft Astro Pi
 ------------------------------
@@ -187,6 +187,7 @@ AstroPiDataLogger creates a `CSV`_ file which contains the following fields sepe
 ===================== =========================== ===============================================
 Python Constant       File Header                 Description
 ===================== =========================== ===============================================
+DATETIME              datetime                    datetime string in format %d/%M/%Y %h:%m:%s
 TIME                  time                        time expressed as number of seconds since epoch
 CPU_TEMP              cpu temperature             temperature of the raspberry pi cpu
 HUMIDITY              humidity                    humidity

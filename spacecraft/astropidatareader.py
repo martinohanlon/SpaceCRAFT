@@ -29,11 +29,13 @@ if __name__ == "__main__":
         found_row = True
         while(found_row):
             #read the values
+            datetime = apreader.get_datetime()
             time = apreader.get_time()
             cpu_temp = apreader.get_cpu_temperature()
             temp_humid = apreader.get_temperature_from_humidity()
             temp_press = apreader.get_temperature_from_pressure()
             pressure = apreader.get_pressure()
+            humidity = apreader.get_humidity()
             ori_deg = apreader.get_orientation_in_degrees()
             ori_rad = apreader.get_orientation_in_radians()
             comp = apreader.get_compass_raw()
@@ -42,12 +44,14 @@ if __name__ == "__main__":
             joystick = apreader.get_joystick()
 
             #print them to the screen
-            print("{} {} {} {} {} {} {} {} {} {} {}".format(
+            print("{} {} {} {} {} {} {} {} {} {} {} {} {}".format(
+                datetime,
                 time,
                 cpu_temp,
                 temp_humid,
                 temp_press,
                 pressure,
+                humidity,
                 ori_deg,
                 ori_rad,
                 comp,
