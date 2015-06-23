@@ -42,52 +42,60 @@ class PlaybackData(Thread):
             if apr.rowcount > 0:
                 
                 #create connection to minecraft
-                #mc = Minecraft.create()
+                mc = Minecraft.create()
 
                 #find the position of where to put the ISS tower display
-                #pos = mc.player.getTilePos()
-                #pos.z -= 10
-                #pos.y = mc.getHeight(pos.x, pos.z)
+                pos = mc.player.getTilePos()
+                pos.z -= 10
+                pos.y = mc.getHeight(pos.x, pos.z)
 
-                #create the iss tower display
-                #isstowerdisplay = ISSTowerMinecraftDisplay(mc, pos)
+                try:
+                    #create the iss tower display
+                    isstowerdisplay = ISSTowerMinecraftDisplay(mc, pos)
 
-                #loop until its stopped
-                found_row = True
-                while self.stopped == False and found_row == True:
-                    #get the time started
-                    real_time_start = time()
-                    last_row_time = apr.get_time()
+                    #loop until its stopped
+                    found_row = True
+                    while self.stopped == False and found_row == True:
+                        #get the time started
+                        real_time_start = time()
+                        last_row_time = apr.get_time()
+                        
+                        #update the ISS dispay with the data
+                        isstowerdisplay.update(
+                            apr.get_time(),
+                            apr.get_cpu_temperature(),
+                            apr.get_temperature(),
+                            apr.get_humidity(),
+                            apr.get_pressure(),
+                            apr.get_orientation(),
+                            apr.get_joystick())
+                        
+                        #move onto the next row
+                        found_row = apr.next()
+
+                        #wait until the next row time
+                        if found_row:
+                            #wait until the time in the real world is greater than the time between the rows
+                            while (time() - real_time_start) < ((apr.get_time() - last_row_time) / self.speed) :
+                                sleep(0.001)
+                finally:
+                    isstowerdisplay.clear()
+                    print("Playback {} finished".format(self.filename))
                     
-                    #update the ISS dispay with the data
-                    #isstowerdisplay.update(
-                    #    apr.get_time(),
-                    #    apr.get_cpu_temperature(),
-                    #    apr.get_temperature(),
-                    #    apr.get_humidity(),
-                    #    apr.get_pressure(),
-                    #    apr.get_orientation(),
-                    #    apr.get_joystick())
-                    
-                    #move onto the next row
-                    found_row = apr.next()
+            else:
+                print("{} contained no data".format(self.filename))
 
-                    #wait until the next row time
-                    if found_row:
-                        #wait until the time in the real world is greater than the time between the rows
-                        while (time() - real_time_start) < ((apr.get_time() - last_row_time) / self.speed) :
-                            sleep(0.001)
-                
+        #catch failed to open file error
         except IOError:
             print("Failed to open file '{}'.".format(self.filename))
             print(sys.exc_info()[1])
 
+        #catch any other error
         except:
             print(sys.exc_info()[0])
             print(sys.exc_info()[1])
                         
         finally:
-            print("Playback {} finished".format(self.filename))
             self.running = False
             self.stopped = True
 
