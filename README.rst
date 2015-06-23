@@ -2,16 +2,9 @@
 SpaceCRAFT
 ==========
 
-IN PROGRESS!!!
-
 SpaceCRAFT is a python module and collection of programs which displays data from the `Raspberry Pi`_ `Astro Pi`_ computer in `Minecraft Pi Edition`_.
 
 SpaceCRAFT was conceived by Hannah Belshaw, from Cumnor House Girls School, and was the `Primary School Winning Entry`_ in the `Astro Pi`_ competition, it was created by Martin O'Hanlon (`Stuff about=code`_) for the `Raspberry Pi`_ foundation.
-
-Installation
-============
-
-Todo
 
 Structure
 =========
@@ -19,6 +12,22 @@ Structure
 * spacecraft - the spacecraft python module and programs
 * poc - proof of concept code used in the development included for interest and prosperity
 * scripts - useful scripts!
+
+Installation
+============
+
+To download SpaceCRAFT, clone the source code from `GitHub`_::
+
+    cd ~
+    git clone https://github.com/martinohanlon/SpaceCRAFT
+
+To install the spacecraft python module which will allow you to remix or create your own SpaceCRAFT displays::
+
+    cd ~/SpaceCRAFT
+    sudo python2 setup.py install
+    sudo python3 setup.py install
+
+All the program files are contained in the ~/SpaceCRAFT/spacecraft directory.
 
 Usage
 =====
@@ -88,6 +97,7 @@ SpaceCRAFT Python Module
 The SpaceCRAFT project contains a Python module called spacecraft which you can use to create your own Astro Pi Minecraft projects.
 
 The module contains the following sub modules:
+
 * astropidata - used to write and read data from the astro pi computer
 * astropithreaded - a threaded version of the AstroPi module which is useful for reading data continuously from the Astro Pi computer
 * cputemp - used to read the temperature of the CPU
@@ -143,6 +153,7 @@ When the file is open it can be iterated and read using the following functions:
 * next() -> bool - moves to the next row in the file, returns False if there are no more rows
 * previous() -> bool - moves to the previous row in the, returns False if at the start of the file
 * currentrow -> integer - returns a 0 based value for the current row
+* get_datetime -> string - returns a string representing the time in the format %d/%M/%Y %h:%m:%s
 * get_time() -> integer - returns the time the row was created, in seconds since the epoch
 * get_temperature() -> float - returns the temperature in C
 * get_temperature_from_humidity() -> float - returns the temperature in C from the humidity sensor
@@ -319,7 +330,7 @@ These models are all based on (inherited from) the minecraftstuff.MinecraftShape
 * redraw() - redraws the model
 * reset() - resets the model back to its original position and rotation
 * setBlock(x, y, z, blockId, blockData) - sets a block within the model, the positions are relative not absolute
-* setBlocks(x1, y1, z1, x2, y2, z2, blockId, blockData) - creates a suboid of blocks in the model, again positions are relative
+* setBlocks(x1, y1, z1, x2, y2, z2, blockId, blockData) - creates a cuboid of blocks in the model, again positions are relative
 * getShapeBlock(x, y, z) -> minecraftstuff.ShapeBlock - returns the block in the shape which is at that absolute position
 * position -> mcpi.minecraft.Vec3(x, y, z) - the position of the shape in Minecraft
 * visible -> boolean - whether the shape in visible
