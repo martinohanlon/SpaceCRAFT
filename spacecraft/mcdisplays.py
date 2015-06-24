@@ -157,19 +157,6 @@ class ISSTowerMinecraftDisplay():
         self.rocket.clear()
         self.launchpad.clear()
 
-#TODO
-class MartsMinecraftDisplay():
-    """
-    An display of the ISS data in Minecraft by Martin O'Hanlon
-    """
-    def __init__(self, mc, pos):
-        pass
-
-    def update(self, temperature, humidity, pressure, orientation):
-        pass
-
-    def clear(self):
-        pass
     
 #test
 if __name__ == "__main__":
