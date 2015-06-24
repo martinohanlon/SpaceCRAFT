@@ -41,14 +41,14 @@ if __name__ == "__main__":
             sleep(1)
         mc.postToChat("Blast Off")
 
-        #laucnh the rocket
+        #launch the rocket
         for up in range(0, 10):
             rocket.moveBy(0, 1, 0)
             
         #pitch the rocket over
         pitch = 0
         for up in range(0, 75):
-            #find ou where the rocket should be pointing for its pitch
+            #find out where the rocket should be pointing for its pitch
             z, y = findPointOnCircle(0, 0, 1, pitch)
             #rotate the rocket
             rocket.rotate(0, pitch, 0)

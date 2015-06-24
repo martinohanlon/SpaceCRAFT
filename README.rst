@@ -27,7 +27,9 @@ To install the spacecraft python module which will allow you to remix or create 
     sudo python2 setup.py install
     sudo python3 setup.py install
 
-All the program files are contained in the ~/SpaceCRAFT/spacecraft directory.
+All the program files are contained in the ~/SpaceCRAFT/spacecraft directory::
+
+    cd ~/SpaceCRAFT/spacecraft
 
 Usage
 =====
@@ -76,7 +78,11 @@ Minecraft Data Playback
 -----------------------
 The spacecraft/mcastroplayback.py program playbacks data from a CSV file created by the Data Logger and displays the information into Minecraft using the towers, clock, ISS and rocket design conceived by Hannah. This is the program which you can use to playback the data which is returned from on the AstroPi computer from the ISS.
 
-The program has a command line interface and when it starts will show the following prompt::
+The program has a command line interface which is run from the terminal using::
+
+    sudo python3 mcastroplayback.py
+
+When it starts it will show the following prompt::
 
     Welcome to SpaceCRAFT data playback.  Type help or ? to list commands.
     
@@ -117,11 +123,19 @@ Interactive Minecraft Astro Pi
 ------------------------------
 The spacecraft/mcinteractiveastropi.py program creates a interactive astro pi in Minecraft which when hit (right clicked) with a sword it responds with a description and makes the interacts with the real astro pi.
 
-Start Minecraft: Pi edition, select/create a new game::
+Start Minecraft: Pi edition, select/create a new game and run::
 
     sudo python3 mcinteractiveastropi.py
 
 The AstroPi model will appear above the player, fly up and hit the model to interact with it.
+
+Minecraft Rocket Launch
+-----------------------
+The spacecraft/mcrocketlaunch.py program simulates a rocket launch including pitching over the rocket as it ascends. Run using::
+
+    sudo python3 mcrocketlaunch.py
+
+When the program runs a rocket will be created in Minecraft sitting on a launch pad.  To launch the rocket the player has to hit (right click while holding a sword) the launch pad.
 
 SpaceCRAFT Python Module
 ========================
@@ -129,7 +143,7 @@ The SpaceCRAFT project contains a Python module called spacecraft which you can 
 
 The module contains the following sub modules:
 
-* astropidata - used to write and read data from the astro pi computer
+* astropidata - used to log data from the astro pi computer to a CSV file and read it back again
 * astropithreaded - a threaded version of the AstroPi module which is useful for reading data continuously from the Astro Pi computer
 * cputemp - used to read the temperature of the CPU
 * mcclock - a minecraft clock which can be used to show the date and time
@@ -419,7 +433,6 @@ To create the stairs, you need to pass:
 
 Minecraft Sensor Displays (mcsensors)
 -------------------------------------
-
 There are a the following minecraft models in the spacecraft.mcsensors module for displaying sensor data in Minecraft:
 
 * DisplayTube - a glass tube which fills with a block type (a bit like a thermometer!)
@@ -428,7 +441,6 @@ There are a the following minecraft models in the spacecraft.mcsensors module fo
 
 DisplayTube
 ```````````
-
 To create a DisplayTube you need pass:
 
 * mc - minecraft connection
@@ -473,7 +485,6 @@ The DisplayTube has 2 methods:
 
 BarGraph
 ````````
-
 To create a BarGraph the minimum values which have to be passed are:
 
 * mc - minecraft connection
@@ -550,7 +561,6 @@ By modifying xIncrement and zIncrement a bar graph can be made to go in any dire
 
 SpikeyCircle
 ````````````
-
 To create a SpikeyCircle the minimum values which have to be passed are:
 
 * mc - minecraft connection
