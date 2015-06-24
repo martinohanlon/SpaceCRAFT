@@ -182,10 +182,10 @@ To loop through each row in a data file and print it to the screen you would use
 
         #keep looping until its the end of file
         found_row = True
-        while(found_row):
+	        while(found_row):
 
             #get the time the row was created
-            timedata = reader.get_time()
+            timedata = reader.get_datetime()
             print("Time = {}".format(timedata))
     
             #move to the next row
@@ -388,7 +388,209 @@ To create the stairs, you need to pass:
 
 Minecraft Sensor Displays (mcsensors)
 -------------------------------------
-TODO
+
+There are a the following minecraft models in the spacecraft.mcsensors module for displaying sensor data in Minecraft:
+
+* DisplayTube - a glass tube which fills with a block type (a bit like a thermometer!)
+* BarGraph - a bar graph built using blocks
+* SpikeyCircle - data is displayed as lines which rotate out from the centre of a circle
+
+DisplayTube
+```````````
+
+To create a DisplayTube you need pass:
+
+* mc - minecraft connection
+* pos - position to create the DisplayTube
+* height - the height of the display tube
+* minValue - the minimum value the display tube should show
+* maxValue - the maximum value 
+* blockId - the id of the block the tube should fill with
+* blockData (optional) - the data value of the block
+
+Based on the height, minValue and maxValue the BarGraph will scale the number of blocks
+
+The DisplayTube has 2 methods:
+
+* addValue(value) - add 1 value to the BarGraph, if the value is above or below the maxValue or minValue it will change the min / max values to the current value
+* clear() - clears the DisplayTube
+
+::
+
+    from spacecraft.mcsensors import BarGraph
+    from mcpi.minecraft import Minecraft
+    from time import sleep
+
+    #create connection to minecraft
+    mc = Minecraft.create()
+    #find the players position
+    pos = mc.player.getTilePos()
+
+    #create the display tube
+    height = 10
+    minValue = 0
+    maxValue = 10
+    tube = DisplayTube(mc, pos, 10, 0, 10, block.LAVA.id)
+
+    #set some values in the tube
+    sleep(5)
+    for count in range(0,11):
+        tube.setValue(count)
+        sleep(1)
+
+   tube.clear()
+
+BarGraph
+````````
+
+To create a BarGraph the minimum values which have to be passed are:
+
+* mc - minecraft connection
+* pos - position to create the BarGraph
+* height - the height of the bar graph
+* maxLength - the maximum length of the bar graph, once this length is reached, the next value will go back to the start
+* minValue - the minimum value the bar graph should display, any values less than this will show as zero blocks
+* maxValue - the maximum value the bar graph should display, any value greater than this will show as the maximum height in blocks
+
+Based on the height, minValue and maxValue the BarGraph will scale the number of blocks
+
+The BarGraph has 2 methods:
+
+* addValue(value) - add 1 value to the BarGraph
+* clear() - clears the BarGraph
+
+::
+
+    from spacecraft.mcsensors import BarGraph
+    from mcpi.minecraft import Minecraft
+    from time import sleep
+
+    #create connection to minecraft
+    mc = Minecraft.create()
+    #find the players position
+    pos = mc.player.getTilePos()
+
+    #create the bar graph
+    height = 20
+    maxLength = 10
+    minValue = 0
+    maxValue = 20
+    graph = BarGraph(mc, pos, height, maxLength, minValue, maxValue)
+
+    #add some values to the bar graph
+    for value in range(0,20):
+        graph.addValue(value)
+        sleep(1)
+
+    graph.clear()
+
+Optionally the following parameters can also be used when creating the BarGraph:
+
+* blocksToUse - a list of mcpi.block.Block objects for the blocks which should be used in the bar graph, by default the bar graph will use the 16 colours of wool blocks
+* xIncrement - a value to increment pos.x by each time a value is added to the bar graph, by default this value is 1 meaning each value added to the BarGraph makes the grap
+* zIncrement - a value to increment pos.z by ...  
+
+::
+
+    from spacecraft.mcsensors import BarGraph
+    from mcpi.minecraft import Minecraft
+    from mcpi import block
+    from mcpi.block import Block
+    from time import sleep
+
+    mc = Minecraft.create()
+    pos = mc.player.getTilePos()
+    height = 20
+    maxLength = 10
+    minValue = 0
+    maxValue = 20
+    blocksToUse = [Block(block.STONE.id), Block(block.WOOL.id, 3)]
+    xIncrement = 0
+    zIncrement = 1
+
+    graph = BarGraph(mc, pos, height, maxLength, minValue, maxValue, blocksToUse, xIncrement, zIncrement)
+
+    for value in range(0,20):
+        graph.addValue(value)
+
+    graph.clear()
+
+By modifying xIncrement and zIncrement a bar graph can be made to go in any direction.
+
+SpikeyCircle
+````````````
+
+To create a SpikeyCircle the minimum values which have to be passed are:
+
+* mc - minecraft connection
+* pos - position to create the SpikeyCircle
+* maxRadius - the maximum radius that the lines of the Spikey Circle will go out
+* minValue - the minimum value the spikey circle should display, any values less than this will show as zero blocks
+* maxValue - the maximum value the spikey circle should display, any value greater than this will show as the maximum radius in blocks
+
+Based on the maxRadius, minValue and maxValue the SpikeyCircle will scale the number of blocks
+
+The SpikeyCircle has 2 methods:
+
+* addValue(value) - add 1 value to the SpikeyCircle
+* clear() - clears the SpikeyCircle
+
+::
+
+    from spacecraft.mcsensors import SpikeyCircle
+    from mcpi.minecraft import Minecraft
+    from mcpi import block
+    from mcpi.block import Block
+    from time import sleep
+
+    #create connection to minecraft
+    mc = Minecraft.create()
+    #find the players position
+    pos = mc.player.getTilePos()
+
+    #create the spikey circle
+    maxRadius = 20
+    minValue = 0
+    maxValue = 30
+    circle = SpikeyCircle(mc, pos, maxRadius, minValue, maxValue)
+
+    #add some values to the spikey circle
+    for value in range(0,30):
+        circle.addValue(value)
+        sleep(1)
+
+    circle.clear()
+
+Optionally the following parameters can also be used when creating the BarGraph:
+
+* blocksToUse - a list of mcpi.block.Block objects for the blocks which should be used in the spikey circle, by default the spikey circle will use the 16 colours of wool blocks
+* angleIncrement - an angle to increment by each time a new line is drawn, by default its 15
+
+::
+
+    from spacecraft.mcsensors import SpikeyCircle
+    from mcpi.minecraft import Minecraft
+    from time import sleep
+
+    #create connection to minecraft
+    mc = Minecraft.create()
+    #find the players position
+    pos = mc.player.getTilePos()
+
+    #create the spikey circle
+    maxRadius = 20
+    minValue = 0
+    maxValue = 30
+    blocksToUse = [Block(block.STONE.id), Block(block.WOOL.id, 3)]
+    angleIncrement = 10
+    circle = SpikeyCircle(mc, pos, maxRadius, minValue, maxValue, blocksToUse, angleIncrement)
+
+    #add some values to the spikey circle
+    for value in range(0,30):
+        circle.addValue(value)
+        sleep(1)
+
+    circle.clear()
 
 Contributors
 ============
