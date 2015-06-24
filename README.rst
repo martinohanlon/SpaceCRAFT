@@ -74,7 +74,38 @@ e.g. to read in the file /home/pi/datafile.csv::
 
 Minecraft Data Playback
 -----------------------
-TODO
+The spacecraft/mcastroplayback.py program playbacks data from a CSV file created by the Data Logger and displays the information into Minecraft using the towers, clock, ISS and rocket design conceived by Hannah. This is the program which you can use to playback the data which is returned from on the AstroPi computer from the ISS.
+
+The program has a command line interface and when it starts will show the following prompt::
+
+    Welcome to SpaceCRAFT data playback.  Type help or ? to list commands.
+    
+    SpaceCRAFT $
+
+Typing the command help and pressing Enter will display all the playback commands::
+
+    SpaceCRAFT $ help
+    
+    Documented commands (type help <topic>):
+    ========================================
+    data  exit  help  play  speed  stop
+
+Typing help and the name of a command will display information about how to use that command, e.g.::
+
+    SpaceCRAFT $ help play
+    Play Astro Pi data file:  play filename
+
+To playback a file use the play command and the location of the file, e.g.::
+
+    SpaceCRAFT $ play /home/pi/datafile.csv
+
+To stop the playback use the stop command::
+
+    SpaceCRAFT $ stop
+
+To exit the program use the exit command::
+
+    SpaceCRAFT $ exit
 
 Minecraft Real-Time Data Display
 --------------------------------
