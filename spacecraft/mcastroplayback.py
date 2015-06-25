@@ -44,6 +44,8 @@ class PlaybackData(Thread):
                 #create connection to minecraft
                 mc = Minecraft.create()
 
+                mc.postToChat("Playback {} Started".format(self.filename))
+
                 #find the position of where to put the ISS tower display
                 pos = mc.player.getTilePos()
                 pos.z -= 10
@@ -80,10 +82,10 @@ class PlaybackData(Thread):
                                 sleep(0.001)
                 finally:
                     isstowerdisplay.clear()
-                    print("Playback {} finished".format(self.filename))
+                    mc.postToChat("Playback {} finished".format(self.filename))
                     
             else:
-                print("{} contained no data".format(self.filename))
+                print("Error - {} contained no data".format(self.filename))
 
         #catch failed to open file error
         except IOError:
@@ -186,7 +188,8 @@ class PlaybackCommands(Cmd):
                     self.playback.set_speed(speed)
                 else:
                     print("Error - {} is not a valid speed".format(speed))
-                    
+            else:
+                print("Error - speed must be passed an number")
         else:
             print("Error - no playback is running")
         
