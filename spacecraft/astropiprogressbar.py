@@ -9,7 +9,7 @@ astropiprogressbar.py
 Progress bars which shows an animation on the astro pi led matrix
 used to show the data logger is working
 """
-from astro_pi import AstroPi
+from sense_hat import AstroPi
 from time import sleep
 
 class AstroPiProgressBar():
