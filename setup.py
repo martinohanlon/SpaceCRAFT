@@ -9,7 +9,7 @@ with open(path.join(here, "README.rst"), encoding="utf-8") as f:
 
 setup(
     name="spacecraft",
-    version="0.1.0",
+    version="0.2.0",
     description="SpaceCRAFT - A module for rendering astro pi data in Minecraft",
     long_description=long_description,
     url="https://github.com/martinohanlon/SpaceCRAFT",
@@ -37,5 +37,5 @@ setup(
         "spacecraft",
     ],
     packages=find_packages(exclude=["poc", "scripts"]),
-    install_requires=["astro-pi"],
+    install_requires=["sense-hat"],
 )

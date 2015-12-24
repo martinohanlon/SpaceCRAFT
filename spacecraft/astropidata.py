@@ -14,11 +14,7 @@ from csv import DictWriter, DictReader
 from datetime import datetime
 from time import sleep, time
 
-try: 
-    from astropithreaded import AstroPiThreaded
-except ImportError:
-    print("Error importing astro_pi module - required for AstroPiDataLogger")
-
+from astropithreaded import AstroPiThreaded
 from astropiprogressbar import AstroPiBelshawProgressBar
 from cputemp import CPUTemp
 import pygame

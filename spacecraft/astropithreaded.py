@@ -8,7 +8,11 @@ astropithreaded.py
 
 A class which continually reads the Astro Pi's orientation otherwise it goes out of sync
 """
-from astro_pi import AstroPi
+try: 
+    from sense_hat import AstroPi
+except ImportError:
+    print("Error importing sense_hat module - required for AstroPiThreaded")
+
 from time import sleep
 
 try:
@@ -22,14 +26,13 @@ class AstroPiThreaded(AstroPi):
     """
     def __init__(
         self,
-        fb_device = '/dev/fb1',
         imu_settings_file = 'RTIMULib',
-        text_assets = 'astro_pi_text',
+        text_assets = 'sense_hat_text',
         sample_rate = 0.01):
 
         self.sample_rate = sample_rate
         
-        AstroPi.__init__(self, fb_device, imu_settings_file, text_assets)
+        AstroPi.__init__(self, imu_settings_file, text_assets)
 
         self._orientation = AstroPi.get_orientation(self)
 
