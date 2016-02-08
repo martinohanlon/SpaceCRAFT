@@ -2,6 +2,11 @@
 SpaceCRAFT Change Log
 =====================
 
+v0.2.1
+======
+
+Minor bug fix
+
 v0.2.0
 ======
 

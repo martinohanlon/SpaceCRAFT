@@ -19,8 +19,8 @@ if __name__ == "__main__":
     rocketPos = mc.player.getTilePos()
     rocketPos.x += 5
     rocketPos.y = mc.getHeight(rocketPos.x, rocketPos.z) - 1
-    rocket = Rocket(mc, rocketPos)
     launchpad = LaunchPad(mc, rocketPos)
+    rocket = Rocket(mc, rocketPos)
     
     try:
         #wait till the launch tnt is hit
@@ -42,7 +42,7 @@ if __name__ == "__main__":
         mc.postToChat("Blast Off")
 
         #launch the rocket
-        for up in range(0, 10):
+        for up in range(0, 15):
             rocket.moveBy(0, 1, 0)
             
         #pitch the rocket over
